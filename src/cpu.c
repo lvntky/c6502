@@ -1,12 +1,15 @@
 #include "../include/cpu.h"
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 Cpu reset_cpu (Cpu *cpu) {
     cpu->status = 0;
     cpu->register_a = 0;
     cpu->program_counter = 0;
     cpu->register_x = 0;
+  uint8_t register_y = 0;
+    memset(cpu->memory, 0, sizeof(cpu->memory));
 }
 
 void update_zero_and_negative_flags(Cpu *cpu, uint8_t result) {
@@ -41,8 +44,21 @@ uint8_t read_from_memory(Cpu *cpu, uint16_t address) {
   return data;
 }
 
+uint16_t read_from_memory_u16(Cpu *cpu, uint16_t address) {
+  uint16_t lo = (uint16_t)cpu->memory[address];
+  uint16_t hi = (uint16_t)cpu->memory[address + 1];
+  return (hi << 8) | lo;
+}
+
 void write_to_memory(Cpu* cpu, uint16_t address, uint8_t data) {
   cpu->memory[address] = data;
+}
+
+void write_to_memory_u16(Cpu* cpu, uint16_t address, uint16_t data) {
+  uint8_t hi = (uint8_t)(data >> 8);
+  uint8_t lo = (uint8_t)(data & 0xff);
+  write_to_memory(cpu, address, lo);
+  write_to_memory(cpu, (address + 1), hi);
 }
 
 void load_program_to_memory(Cpu* cpu, const unsigned char* program, int program_size) {
@@ -57,7 +73,14 @@ uint16_t get_operand_address(Cpu *cpu, addressing_mode mode) {
       return cpu->program_counter;
     case ZERO_PAGE:
       return read_from_memory(cpu, cpu->program_counter);
-
+    case ABSOLUTE:
+      return read_from_memory_u16(cpu, cpu->program_counter);
+    case ZERO_PAGE_X:
+      return read_from_memory(cpu, cpu->program_counter) + cpu->register_x;
+    case ZERO_PAGE_Y:
+      return read_from_memory(cpu, cpu->program_counter) + cpu->register_y;
+    default:
+      break;
   }
 }
 void run(Cpu* cpu, const unsigned char* program, int program_size) {
