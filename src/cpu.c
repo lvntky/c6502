@@ -36,13 +36,29 @@ void inx(Cpu* cpu) {
   update_zero_and_negative_flags(cpu, cpu->register_x);
 }
 
-void interpret(Cpu* cpu, unsigned char* program, int program_size) {
+uint8_t read_from_memory(Cpu *cpu, uint16_t address) {
+  uint8_t data = cpu->memory[address];
+  return data;
+}
+
+void write_to_memory(Cpu* cpu, uint16_t address, uint8_t data) {
+  cpu->memory[address] = data;
+}
+
+void load_program_to_memory(Cpu* cpu, const unsigned char* program, int program_size) {
+  for (int i = 0; i < program_size; i++) {
+    write_to_memory(cpu, i, program[i]);
+  }
+}
+
+void run(Cpu* cpu, const unsigned char* program, int program_size) {
+  load_program_to_memory(cpu, program, program_size);
   while (cpu->program_counter < program_size) {
-    unsigned char opcode = program[cpu->program_counter];
+    unsigned char opcode = read_from_memory(cpu, cpu->program_counter);
     switch (opcode) {
       case 0xA9:
-        assert(cpu->program_counter + 1 < program_size);
-        unsigned char value = program[cpu->program_counter + 1];
+        assert(cpu->program_counter + 1 < MEMORY_SIZE);
+        unsigned char value = read_from_memory(cpu, cpu->program_counter + 1);
         lda(cpu, value);
         cpu->program_counter += 2;
         printf("Instruction: LDA, Value: %02X\n", value);
@@ -58,7 +74,7 @@ void interpret(Cpu* cpu, unsigned char* program, int program_size) {
         printf("Instruction: INX\n");
         break;
       default:
-        printf("%d\n", value);
+        printf("Unknown opcode: %02X\n", opcode);
         assert(0 && "Unknown opcode");
     }
   }
