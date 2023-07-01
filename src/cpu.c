@@ -51,6 +51,15 @@ void load_program_to_memory(Cpu* cpu, const unsigned char* program, int program_
   }
 }
 
+uint16_t get_operand_address(Cpu *cpu, addressing_mode mode) {
+  switch (mode) {
+    case IMMEDIATE:
+      return cpu->program_counter;
+    case ZERO_PAGE:
+      return read_from_memory(cpu, cpu->program_counter);
+
+  }
+}
 void run(Cpu* cpu, const unsigned char* program, int program_size) {
   load_program_to_memory(cpu, program, program_size);
   while (cpu->program_counter < program_size) {
