@@ -27,7 +27,7 @@ typedef enum addressing_mode {
 }addressing_mode;
 
 Cpu reset_cpu (Cpu *cpu);
-void lda(Cpu *cpu, uint8_t value);
+void lda(Cpu *cpu, addressing_mode mode);
 void tax(Cpu *cpu);
 void update_zero_and_negative_flags(Cpu *cpu, uint8_t result);
 void inx(Cpu* cpu);
