@@ -25,9 +25,8 @@ To build the emulator using CMake, follow these steps:
 2. Navigate to the project directory.
 3. Open a terminal or command prompt in the project directory.
 4. Create a build directory: `mkdir build`
-5. Navigate to the build directory: `cd build`
-6. Generate the build files with CMake: `cmake ..`
-7. Build the project: `cmake --build .`
+5. Build the project `cmake -B ./build -S ./`
+6. Go to build directory: `make all`
 
 This will generate the executable file for the emulator.
 
