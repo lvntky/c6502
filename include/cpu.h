@@ -8,9 +8,20 @@ typedef struct Cpu {
     uint8_t register_a;
     uint8_t register_x;
     uint8_t register_y;
-    uint8_t status;
     uint16_t program_counter;
     uint8_t memory[0XFFFF + 1]; //64kB
+    uint8_t stack[0x100];
+    uint8_t stack_pointer;
+    struct {
+      uint8_t carry : 1;
+      uint8_t zero : 1;
+      uint8_t interrupt_disable : 1;
+      uint8_t decimal_mode : 1;
+      uint8_t break_command : 1;
+      uint8_t overflow : 1;
+      uint8_t negative : 1;
+      uint8_t unused : 1;
+    } flags;
 }Cpu;
 
 Cpu reset_cpu (Cpu *cpu);
@@ -21,4 +32,6 @@ void write_to_memory(Cpu* cpu, uint16_t address, uint8_t data);
 void load_program_to_memory(Cpu* cpu, const unsigned char* program, int program_size);
 uint16_t read_from_memory_u16(Cpu *cpu, uint16_t address);
 void write_to_memory_u16(Cpu* cpu, uint16_t address, uint16_t data);
+void push_stack(Cpu* cpu, uint8_t value);
+uint8_t pop_stack(Cpu* cpu);
 #endif //C6502_CPU_H
