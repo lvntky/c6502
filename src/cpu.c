@@ -58,12 +58,12 @@ void load_program_to_memory(Cpu* cpu, const unsigned char* program, int program_
   }
 }
 void push_stack(Cpu* cpu, uint8_t value) {
-  cpu->stack[0x100 | cpu->stack_pointer] = value;
-  cpu->stack_pointer++;
+  cpu->stack[cpu->stack_pointer] = value;
+  cpu->stack_pointer += 1;
 }
 uint8_t pop_stack(Cpu* cpu) {
   uint8_t value = cpu->stack[0x100 | cpu->stack_pointer];
-  cpu->stack_pointer--;
+  cpu->stack_pointer -= 1;
   return value;
 }
 
@@ -105,6 +105,14 @@ void run(Cpu* cpu, const unsigned char* program, int program_size) {
         cpu->program_counter += 1;
         break;
       case 0xEA:
+        cpu->program_counter += 1;
+        break;
+      case 0x48:
+        pha(cpu);
+        cpu->program_counter += 1;
+        break;
+      case 0x08:
+        // will implement
         cpu->program_counter += 1;
         break;
 

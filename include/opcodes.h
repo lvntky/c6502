@@ -17,6 +17,6 @@ void cli(Cpu* cpu);
 void clv(Cpu* cpu);
 void dex(Cpu* cpu);
 void dey(Cpu* cpu);
-
+void pha(Cpu* cpu);
 
 #endif //C6502_OPCODES_H

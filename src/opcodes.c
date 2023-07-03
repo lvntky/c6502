@@ -45,3 +45,6 @@ void dey(Cpu* cpu) {
   cpu->register_y = (cpu->register_y - 1); // int owerflow
   update_zero_and_negative_flags(cpu, cpu->register_y);
 }
+void pha(Cpu* cpu) {
+  push_stack(cpu, cpu->register_a);
+}
