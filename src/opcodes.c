@@ -13,10 +13,6 @@ void lda(Cpu *cpu, addressing_mode mode) {
   cpu->register_a = value;
   update_zero_and_negative_flags(cpu, cpu->register_a);
 }
-void tax(Cpu *cpu) {
-  cpu->register_x = cpu->register_a;
-  update_zero_and_negative_flags(cpu, cpu->register_x);
-}
 void inx(Cpu* cpu) {
   cpu->register_x = (cpu->register_x + 1) & 0xFF; // fix integer overflow
   update_zero_and_negative_flags(cpu, cpu->register_x);
@@ -45,6 +41,36 @@ void dey(Cpu* cpu) {
   cpu->register_y = (cpu->register_y - 1); // int owerflow
   update_zero_and_negative_flags(cpu, cpu->register_y);
 }
-void pha(Cpu* cpu) {
-  push_stack(cpu, cpu->register_a);
+void sec(Cpu* cpu) {
+  cpu->flags.carry = 1;
+}
+void sed(Cpu* cpu) {
+  cpu->flags.decimal_mode = 1;
+}
+void sei(Cpu* cpu) {
+  cpu->flags.interrupt_disable = 1;
+}
+void tax(Cpu *cpu) {
+  cpu->register_x = cpu->register_a;
+  update_zero_and_negative_flags(cpu, cpu->register_x);
+}
+void tay(Cpu* cpu) {
+  cpu->register_y = cpu->register_a;
+  update_zero_and_negative_flags(cpu, cpu->register_y);
+}
+void tsx(Cpu* cpu) {
+  cpu->register_x = cpu->stack_pointer;
+  update_zero_and_negative_flags(cpu, cpu->register_x);
+}
+void txa(Cpu* cpu) {
+  cpu->register_a = cpu->register_x;
+  update_zero_and_negative_flags(cpu, cpu->register_a);
+}
+void txs(Cpu* cpu)
+{
+  cpu->stack_pointer = cpu->register_x;
+}
+void tya(Cpu* cpu) {
+  cpu->register_a = cpu->register_y;
+  update_zero_and_negative_flags(cpu, cpu->register_a);
 }

@@ -108,24 +108,61 @@ void run(Cpu* cpu, const unsigned char* program, int program_size) {
         cpu->program_counter += 1;
         break;
       case 0x48:
-        pha(cpu);
+        // will implement pha
         cpu->program_counter += 1;
         break;
       case 0x08:
-        // will implement
+        // will implement php
         cpu->program_counter += 1;
         break;
-
-      case 0xA9:
-        assert(cpu->program_counter + 1 < MEMORY_SIZE);
-        addressing_mode mode = IMMEDIATE;
-        lda(cpu, mode);
-        cpu->program_counter += 2;
+      case 0x68:
+        // wil implement pla
+        cpu->program_counter += 1;
+        break;
+      case 0x28:
+        // will implement plp
+        cpu->program_counter += 1;
+        break;
+      case 0x38:
+        sec(cpu);
+        cpu->program_counter += 1;
+        break;
+      case 0xF8:
+        sed(cpu);
+        break;
+      case 0x78:
+        sei(cpu);
         break;
       case 0xAA:
         tax(cpu);
         cpu->program_counter += 1;
         printf("Instruction: TAX\n");
+        break;
+      case 0xA8:
+        tay(cpu);
+        cpu->program_counter += 1;
+        break;
+      case 0xBA:
+        tsx(cpu);
+        cpu->program_counter += 1;
+        break;
+      case 0x8A:
+        txa(cpu);
+        cpu->program_counter += 1;
+        break;
+      case 0x9A:
+        txs(cpu);
+        cpu->program_counter += 1;
+        break;
+      case 0x98:
+        tya(cpu);
+        cpu->program_counter += 1;
+        break;  
+      case 0xA9:
+        assert(cpu->program_counter + 1 < MEMORY_SIZE);
+        addressing_mode mode = IMMEDIATE;
+        lda(cpu, mode);
+        cpu->program_counter += 2;
         break;
       default:
         printf("Unknown opcode: %02X\n", opcode);
