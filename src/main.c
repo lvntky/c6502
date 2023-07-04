@@ -7,23 +7,19 @@ int main(int argc, char** argv)
 {
   Cpu testCpu;
   reset_cpu(&testCpu);
-  testCpu.flags.interrupt_disable = 1;
-  unsigned char program[] = {0x08};
+
+  unsigned char program[] = {0x29, 0x10};
   int program_size = sizeof(program) / sizeof(program[0]);
   run(&testCpu, program, program_size);
-  testCpu.flags.interrupt_disable = 0;
-  unsigned char program2[] = {0x28};
-  int program_size2 = sizeof(program2) / sizeof(program2[0]);
-  run(&testCpu, program2, program_size2);
-  printf("register x : %d\n", testCpu.register_x);
-  printf("register a : %d\n", testCpu.register_a);
+  printf("accumulator : %d\n", testCpu.register_a);
+  printf("x register : %d\n", testCpu.register_x);
+  printf("y register : %d\n", testCpu.register_y);
   printf("pc %d\n", testCpu.program_counter);
   printf("sp: %d\n", STACK_PAGE_START + testCpu.stack_pointer);
-  for (int i = 256; i < 512; i++) {
+  for (int i = 510; i < 512; i++) {
     printf("STACK (%d) - %d\n", (i), testCpu.memory[i]);
   }
-  plp(&testCpu);
 
-  printf("flag interrupt disable : %d\n", testCpu.flags.interrupt_disable);
+  print_cpu_flags(&testCpu);
   return 0;
 }

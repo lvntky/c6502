@@ -7,7 +7,6 @@
 #include "./cpu.h"
 #include "./addressing_mode.h"
 
-void lda(Cpu* cpu, addressing_mode mode);
 // Addressing Mode : IMPLIED
 void clc(Cpu* cpu);
 void cld(Cpu* cpu);
@@ -17,7 +16,6 @@ void dex(Cpu* cpu);
 void dey(Cpu* cpu);
 void inx(Cpu* cpu);
 void iny(Cpu* cpu);
-// stack operations, will implement
 void pha(Cpu* cpu);
 void php(Cpu* cpu);
 void pla(Cpu* cpu);
@@ -31,6 +29,9 @@ void tsx(Cpu* cpu);
 void txa(Cpu* cpu);
 void txs(Cpu* cpu);
 void tya(Cpu* cpu);
-
+// Addressing Mode : IMMEDIATE
+void lda(Cpu* cpu, addressing_mode mode);
+void adc(Cpu* cpu, addressing_mode mode);
+void and(Cpu* cpu, addressing_mode mode);
 
 #endif //C6502_OPCODES_H

@@ -20,6 +20,6 @@ typedef enum addressing_mode {
   NONE_ADDRESSING
 }addressing_mode;
 
-uint16_t get_operand_address(Cpu *cpu, addressing_mode mode);
+uint16_t get_operator_address(Cpu *cpu, addressing_mode mode);
 
 #endif //C6502_SRC_ADDRESSING_MODE_H_

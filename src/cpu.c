@@ -41,12 +41,29 @@ void update_flags_by_stack_status(Cpu* cpu, uint8_t status) {
   cpu->flags.negative = (status >> 7) & 0x01;
 }
 
+void print_cpu_flags(const Cpu* cpu) {
+  printf("========================================\n");
+  printf("Carry: %d\n", cpu->flags.carry);
+  printf("Zero: %d\n", cpu->flags.zero);
+  printf("Interrupt Disable: %d\n", cpu->flags.interrupt_disable);
+  printf("Decimal Mode: %d\n", cpu->flags.decimal_mode);
+  printf("Break Command: %d\n", cpu->flags.break_command);
+  printf("Overflow: %d\n", cpu->flags.overflow);
+  printf("Negative: %d\n", cpu->flags.negative);
+  printf("Unused: %d\n", cpu->flags.unused);
+  printf("========================================\n");
+}
+
+
 void run(Cpu* cpu, const unsigned char* program, int program_size) {
   load_program_to_memory(cpu, program, program_size);
   while (cpu->program_counter < program_size) {
     unsigned char opcode = read_from_memory(cpu, cpu->program_counter);
     switch (opcode) {
       // Implied
+      case 0x00:
+        cpu->flags.break_command = 1;
+        return;
       case 0x18:
         clc(cpu);
         cpu->program_counter += 1;
@@ -132,10 +149,19 @@ void run(Cpu* cpu, const unsigned char* program, int program_size) {
         tya(cpu);
         cpu->program_counter += 1;
         break;
+        // Immediate
       case 0xA9:
         assert(cpu->program_counter + 1 < MEMORY_SIZE);
         addressing_mode mode = IMMEDIATE;
         lda(cpu, mode);
+        cpu->program_counter += 2;
+        break;
+      case 0x69:
+        adc(cpu, IMMEDIATE);
+        cpu->program_counter += 2;
+        break;
+      case 0x29:
+        and(cpu, IMMEDIATE);
         cpu->program_counter += 2;
         break;
       default:

@@ -28,4 +28,5 @@ Cpu reset_cpu (Cpu *cpu);
 void update_zero_and_negative_flags(Cpu *cpu, uint8_t result);
 void update_flags_by_stack_status(Cpu* cpu, uint8_t status);
 void run(Cpu* cpu, const unsigned char* program, int program_size);
+void print_cpu_flags(const Cpu* cpu);
 #endif //C6502_CPU_H

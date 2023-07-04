@@ -8,13 +8,7 @@
 #include "../include/memory.h"
 #include <stdio.h>
 
-void lda(Cpu *cpu, addressing_mode mode) {
-  uint16_t address = get_operand_address(cpu, mode);
-  printf("address : %d\n", address);
-  unsigned value = read_from_memory(cpu, address + 1); // operand + 1
-  cpu->register_a = value;
-  update_zero_and_negative_flags(cpu, cpu->register_a);
-}
+// IMPLIED
 void inx(Cpu* cpu) {
   cpu->register_x = (cpu->register_x + 1) & 0xFF; // fix integer overflow
   update_zero_and_negative_flags(cpu, cpu->register_x);
@@ -100,5 +94,31 @@ void txs(Cpu* cpu)
 }
 void tya(Cpu* cpu) {
   cpu->register_a = cpu->register_y;
+  update_zero_and_negative_flags(cpu, cpu->register_a);
+}
+// IMMEDIATE
+void lda(Cpu *cpu, addressing_mode mode) {
+  uint16_t address = get_operator_address(cpu, mode);
+  printf("address : %d\n", address);
+  unsigned value = read_from_memory(cpu, address + 1); // operand + 1
+  cpu->register_a = value;
+  update_zero_and_negative_flags(cpu, cpu->register_a);
+}
+void adc(Cpu* cpu, addressing_mode mode) {
+  uint8_t address = get_operator_address(cpu, mode);
+  uint8_t operand_value = cpu->memory[address + 1];
+  uint16_t sum = cpu->register_a + operand_value + cpu->flags.carry;
+
+  cpu->flags.carry = (sum > 0xFF) ? 1 : 0; // Set the carry flag if the sum overflows
+  cpu->flags.overflow = (((cpu->register_a ^ operand_value) & 0x80) == 0 && ((cpu->register_a ^ sum) & 0x80) != 0) ? 1 : 0; // Calculate the overflow flag
+  cpu->register_a = sum & 0xFF; // Store the result in the accumulator
+
+  update_zero_and_negative_flags(cpu, cpu->register_a); // Update the zero and negative flags
+}
+void and(Cpu* cpu, addressing_mode mode) {
+  uint8_t address = get_operator_address(cpu, mode);
+  uint8_t operand_value = cpu->memory[address + 1];
+  cpu->register_a &= operand_value;
+
   update_zero_and_negative_flags(cpu, cpu->register_a);
 }
