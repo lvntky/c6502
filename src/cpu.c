@@ -29,6 +29,17 @@ void update_zero_and_negative_flags(Cpu *cpu, uint8_t result) {
   }
 }
 
+void update_flags_by_stack_status(Cpu* cpu, uint8_t status) {
+  cpu->flags.carry = (status >> 0) & 0x01;
+  cpu->flags.zero = (status >> 1) & 0x01;
+  cpu->flags.interrupt_disable = (status >> 2) & 0x01;
+  cpu->flags.decimal_mode = (status >> 3) & 0x01;
+  cpu->flags.break_command = (status >> 4) & 0x01;
+  cpu->flags.unused = 1; // Set unused flag to 1
+  cpu->flags.overflow = (status >> 6) & 0x01;
+  cpu->flags.negative = (status >> 7) & 0x01;
+}
+
 uint8_t read_from_memory(Cpu *cpu, uint16_t address) {
   uint8_t data = cpu->memory[address];
   return data;
@@ -112,7 +123,7 @@ void run(Cpu* cpu, const unsigned char* program, int program_size) {
         cpu->program_counter += 1;
         break;
       case 0x08:
-        // will implement php
+        php(cpu);
         cpu->program_counter += 1;
         break;
       case 0x68:
@@ -120,7 +131,7 @@ void run(Cpu* cpu, const unsigned char* program, int program_size) {
         cpu->program_counter += 1;
         break;
       case 0x28:
-        // will implement plp
+        plp(cpu);
         cpu->program_counter += 1;
         break;
       case 0x38:

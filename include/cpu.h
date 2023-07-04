@@ -26,6 +26,7 @@ typedef struct Cpu {
 
 Cpu reset_cpu (Cpu *cpu);
 void update_zero_and_negative_flags(Cpu *cpu, uint8_t result);
+void update_flags_by_stack_status(Cpu* cpu, uint8_t status);
 void run(Cpu* cpu, const unsigned char* program, int program_size);
 uint8_t read_from_memory(Cpu *cpu, uint16_t address);
 void write_to_memory(Cpu* cpu, uint16_t address, uint8_t data);

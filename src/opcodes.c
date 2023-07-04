@@ -24,10 +24,28 @@ void iny(Cpu* cpu) {
 void pha(Cpu* cpu) {
   push_stack(cpu, cpu->register_a);
 }
-
+void php(Cpu* cpu) {
+  uint8_t status = *((uint8_t*)(&cpu->flags));
+  push_stack(cpu, status);
+}
 void pla(Cpu* cpu) {
   cpu->register_a = pop_stack(cpu);
   update_zero_and_negative_flags(cpu, cpu->register_a);
+}
+void plp(Cpu* cpu) {
+  uint8_t status = pop_stack(cpu);
+
+  // Update the individual flag bits in the flags field of the Cpu structure
+  cpu->flags.carry = (status >> 0) & 1;
+  cpu->flags.zero = (status >> 1) & 1;
+  cpu->flags.interrupt_disable = (status >> 2) & 1;
+  cpu->flags.decimal_mode = (status >> 3) & 1;
+  cpu->flags.break_command = (status >> 4) & 1;
+  cpu->flags.overflow = (status >> 6) & 1;
+  cpu->flags.negative = (status >> 7) & 1;
+
+  // Set the unused flag to 1 (as it is always unused in the 6502)
+  cpu->flags.unused = 1;
 }
 void clc(Cpu* cpu) {
   cpu->flags.carry = 0;
