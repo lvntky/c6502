@@ -30,8 +30,16 @@ void txa(Cpu* cpu);
 void txs(Cpu* cpu);
 void tya(Cpu* cpu);
 // Addressing Mode : IMMEDIATE
-void lda(Cpu* cpu, addressing_mode mode);
 void adc(Cpu* cpu, addressing_mode mode);
 void and(Cpu* cpu, addressing_mode mode);
+void cmp(Cpu* cpu, addressing_mode mode);
+void cpx(Cpu* cpu, addressing_mode mode);
+void cpy(Cpu* cpu, addressing_mode mode);
+void lda(Cpu* cpu, addressing_mode mode);
+void ldx(Cpu* cpu, addressing_mode mode);
+void ldy(Cpu* cpu, addressing_mode mode);
+void ora(Cpu* cpu, addressing_mode mode);
+void sbc(Cpu* cpu, addressing_mode mode);
+
 
 #endif //C6502_OPCODES_H

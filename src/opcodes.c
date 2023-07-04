@@ -97,15 +97,8 @@ void tya(Cpu* cpu) {
   update_zero_and_negative_flags(cpu, cpu->register_a);
 }
 // IMMEDIATE
-void lda(Cpu *cpu, addressing_mode mode) {
-  uint16_t address = get_operator_address(cpu, mode);
-  printf("address : %d\n", address);
-  unsigned value = read_from_memory(cpu, address + 1); // operand + 1
-  cpu->register_a = value;
-  update_zero_and_negative_flags(cpu, cpu->register_a);
-}
 void adc(Cpu* cpu, addressing_mode mode) {
-  uint8_t address = get_operator_address(cpu, mode);
+  uint16_t address = get_operator_address(cpu, mode);
   uint8_t operand_value = cpu->memory[address + 1];
   uint16_t sum = cpu->register_a + operand_value + cpu->flags.carry;
 
@@ -116,9 +109,55 @@ void adc(Cpu* cpu, addressing_mode mode) {
   update_zero_and_negative_flags(cpu, cpu->register_a); // Update the zero and negative flags
 }
 void and(Cpu* cpu, addressing_mode mode) {
-  uint8_t address = get_operator_address(cpu, mode);
+  uint16_t address = get_operator_address(cpu, mode);
   uint8_t operand_value = cpu->memory[address + 1];
   cpu->register_a &= operand_value;
 
   update_zero_and_negative_flags(cpu, cpu->register_a);
 }
+void cmp(Cpu* cpu, addressing_mode mode) {
+  uint16_t address = get_operator_address(cpu, mode);
+  uint8_t value = cpu->memory[address + 1];
+  uint8_t result = cpu->register_a - value;
+  update_zero_and_negative_flags(cpu, result);
+  cpu->flags.carry = (cpu->register_a >= value) ? 1 : 0;
+}
+void cpx(Cpu* cpu, addressing_mode mode) {
+  uint16_t address = get_operator_address(cpu, mode);
+  uint8_t value = cpu->memory[address + 1];
+  uint8_t result = cpu->register_x - value;
+  update_zero_and_negative_flags(cpu, result);
+  cpu->flags.carry = (cpu->register_x >= value) ? 1 : 0;
+}
+void cpy(Cpu* cpu, addressing_mode mode) {
+  uint16_t address = get_operator_address(cpu, mode);
+  uint8_t value = cpu->memory[address + 1];
+  uint8_t result = cpu->register_y - value;
+  update_zero_and_negative_flags(cpu, result);
+  cpu->flags.carry = (cpu->register_y >= value) ? 1 : 0;
+}
+void ldx(Cpu *cpu, addressing_mode mode) {
+  uint16_t address = get_operator_address(cpu, mode);
+  unsigned value = read_from_memory(cpu, address + 1); // operand + 1
+  cpu->register_x = value;
+  update_zero_and_negative_flags(cpu, cpu->register_x);
+}
+void ldy(Cpu *cpu, addressing_mode mode) {
+  uint16_t address = get_operator_address(cpu, mode);
+  unsigned value = read_from_memory(cpu, address + 1); // operand + 1
+  cpu->register_y = value;
+  update_zero_and_negative_flags(cpu, cpu->register_y);
+}
+void lda(Cpu *cpu, addressing_mode mode) {
+  uint16_t address = get_operator_address(cpu, mode);
+  unsigned value = read_from_memory(cpu, address + 1); // operand + 1
+  cpu->register_a = value;
+  update_zero_and_negative_flags(cpu, cpu->register_a);
+}
+void ora(Cpu* cpu, addressing_mode mode) {
+  uint16_t address = get_operator_address(cpu, mode);
+  uint8_t value = cpu->memory[address + 1];
+  cpu->register_a |= value;
+  update_zero_and_negative_flags(cpu, cpu->register_a);
+}
+void sbc(Cpu* cpu, addressing_mode mode);
