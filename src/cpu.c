@@ -1,6 +1,7 @@
 #include "../include/cpu.h"
 #include "../include/opcodes.h"
 #include "../include/addressing_mode.h"
+#include "../include/memory.h"
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
@@ -38,44 +39,6 @@ void update_flags_by_stack_status(Cpu* cpu, uint8_t status) {
   cpu->flags.unused = 1; // Set unused flag to 1
   cpu->flags.overflow = (status >> 6) & 0x01;
   cpu->flags.negative = (status >> 7) & 0x01;
-}
-
-uint8_t read_from_memory(Cpu *cpu, uint16_t address) {
-  uint8_t data = cpu->memory[address];
-  return data;
-}
-
-uint16_t read_from_memory_u16(Cpu *cpu, uint16_t address) {
-  uint16_t lo = (uint16_t)cpu->memory[address];
-  uint16_t hi = (uint16_t)cpu->memory[address + 1];
-  return (hi << 8) | lo;
-}
-
-void write_to_memory(Cpu* cpu, uint16_t address, uint8_t data) {
-  cpu->memory[address] = data;
-}
-
-void write_to_memory_u16(Cpu* cpu, uint16_t address, uint16_t data) {
-  uint8_t hi = (uint8_t)(data >> 8);
-  uint8_t lo = (uint8_t)(data & 0xff);
-  write_to_memory(cpu, address, lo);
-  write_to_memory(cpu, (address + 1), hi);
-}
-
-void load_program_to_memory(Cpu* cpu, const unsigned char* program, int program_size) {
-  for (int i = 0; i < program_size; i++) {
-    write_to_memory(cpu, i, program[i]);
-  }
-}
-void push_stack(Cpu* cpu, uint8_t value) {
-  cpu->memory[STACK_PAGE_START + cpu->stack_pointer] = value;
-  cpu->stack_pointer--;
-}
-uint8_t pop_stack(Cpu* cpu) {
-  uint8_t value = cpu->memory[STACK_PAGE_START + cpu->stack_pointer + 1];
-  cpu->memory[STACK_PAGE_START + cpu->stack_pointer + 1] = 0;
-  cpu->stack_pointer++;
-  return value;
 }
 
 void run(Cpu* cpu, const unsigned char* program, int program_size) {
