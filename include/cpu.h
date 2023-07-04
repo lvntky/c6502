@@ -1,6 +1,7 @@
 #ifndef C6502_CPU_H
 #define C6502_CPU_H
 #define MEMORY_SIZE (0XFFFF + 1)
+#define STACK_PAGE_START 0x100
 
 #include <stdint.h>
 
@@ -10,7 +11,6 @@ typedef struct Cpu {
     uint8_t register_y;
     uint16_t program_counter;
     uint8_t memory[0XFFFF + 1]; //64kB
-    uint8_t stack[0x100];
     uint8_t stack_pointer;
     struct {
       uint8_t carry : 1;

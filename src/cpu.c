@@ -11,8 +11,7 @@ Cpu reset_cpu (Cpu *cpu) {
     cpu->register_x = 0;
     cpu->register_y = 0;
     memset(cpu->memory, 0, sizeof(cpu->memory));
-    memset(cpu->stack, 0, sizeof(cpu->stack));
-    cpu->stack_pointer = 0; // top of the stack
+    cpu->stack_pointer = 255;
     return *cpu;
 }
 
@@ -58,12 +57,13 @@ void load_program_to_memory(Cpu* cpu, const unsigned char* program, int program_
   }
 }
 void push_stack(Cpu* cpu, uint8_t value) {
-  cpu->stack[cpu->stack_pointer] = value;
-  cpu->stack_pointer += 1;
+  cpu->memory[STACK_PAGE_START + cpu->stack_pointer] = value;
+  cpu->stack_pointer--;
 }
 uint8_t pop_stack(Cpu* cpu) {
-  uint8_t value = cpu->stack[0x100 | cpu->stack_pointer];
-  cpu->stack_pointer -= 1;
+  uint8_t value = cpu->memory[STACK_PAGE_START + cpu->stack_pointer + 1];
+  cpu->memory[STACK_PAGE_START + cpu->stack_pointer + 1] = 0;
+  cpu->stack_pointer++;
   return value;
 }
 
@@ -108,7 +108,7 @@ void run(Cpu* cpu, const unsigned char* program, int program_size) {
         cpu->program_counter += 1;
         break;
       case 0x48:
-        // will implement pha
+        pha(cpu);
         cpu->program_counter += 1;
         break;
       case 0x08:
@@ -116,7 +116,7 @@ void run(Cpu* cpu, const unsigned char* program, int program_size) {
         cpu->program_counter += 1;
         break;
       case 0x68:
-        // wil implement pla
+        pla(cpu);
         cpu->program_counter += 1;
         break;
       case 0x28:
@@ -157,7 +157,7 @@ void run(Cpu* cpu, const unsigned char* program, int program_size) {
       case 0x98:
         tya(cpu);
         cpu->program_counter += 1;
-        break;  
+        break;
       case 0xA9:
         assert(cpu->program_counter + 1 < MEMORY_SIZE);
         addressing_mode mode = IMMEDIATE;

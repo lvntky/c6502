@@ -21,6 +21,14 @@ void iny(Cpu* cpu) {
   cpu->register_y = (cpu->register_y + 1) & 0xFF; // fix integer overflow
   update_zero_and_negative_flags(cpu, cpu->register_y);
 }
+void pha(Cpu* cpu) {
+  push_stack(cpu, cpu->register_a);
+}
+
+void pla(Cpu* cpu) {
+  cpu->register_a = pop_stack(cpu);
+  update_zero_and_negative_flags(cpu, cpu->register_a);
+}
 void clc(Cpu* cpu) {
   cpu->flags.carry = 0;
 }
