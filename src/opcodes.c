@@ -3,10 +3,8 @@
 //
 
 #include "../include/opcodes.h"
-#include "../include/addressing_mode.h"
 #include "../include/stack.h"
 #include "../include/memory.h"
-#include <stdio.h>
 
 // IMPLIED
 void brk(Cpu* cpu, addressing_mode mode) {

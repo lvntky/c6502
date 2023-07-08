@@ -1,6 +1,5 @@
 #include "../include/cpu.h"
 #include "../include/opcodes.h"
-#include "../include/addressing_mode.h"
 #include "../include/memory.h"
 #include <stdio.h>
 #include <assert.h>

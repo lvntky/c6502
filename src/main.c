@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "../include/cpu.h"
-#include "../include/opcodes.h"
 
 // DEBUG PURPOSE ONLY, DELETE IT.
 int main(int argc, char** argv)

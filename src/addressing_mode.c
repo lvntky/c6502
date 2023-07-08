@@ -3,7 +3,6 @@
 //
 
 #include "../include/addressing_mode.h"
-#include <stdio.h>
 
 uint16_t get_operator_address(Cpu *cpu, addressing_mode mode) {
   switch (mode) {
