@@ -25,6 +25,8 @@ uint16_t get_operator_address(Cpu *cpu, addressing_mode mode) {
       break;
     case INDIRECT_Y:
       break;
+    case NONE_ADDRESSING:
+      break;
     default:
       break;
   }

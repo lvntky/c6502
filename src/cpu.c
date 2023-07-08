@@ -54,180 +54,65 @@ void print_cpu_flags(const Cpu* cpu) {
   printf("========================================\n");
 }
 
+const struct OpcodeEntry opcode_table[] = {
+    // Implied
+    {0x00, brk, NONE_ADDRESSING, "BRK"},
+    {0x18, clc, NONE_ADDRESSING, "CLC"},
+    {0xD8, cld, NONE_ADDRESSING, "CLD"},
+    {0x58, cli, NONE_ADDRESSING, "CLI"},
+    {0xB8, clv, NONE_ADDRESSING, "CLV"},
+    {0xCA, dex, NONE_ADDRESSING, "DEX"},
+    {0x88, dey, NONE_ADDRESSING, "DEY"},
+    {0xE8, inx, NONE_ADDRESSING, "INX"},
+    {0xC8, iny, NONE_ADDRESSING, "INY"},
+    {0xEA, nop, NONE_ADDRESSING, "NOP"},
+    {0x48, pha, NONE_ADDRESSING, "PHA"},
+    {0x08, php, NONE_ADDRESSING, "PHP"},
+    {0x68, pla, NONE_ADDRESSING, "PLA"},
+    {0x28, plp, NONE_ADDRESSING, "PLP"},
+    {0x38, sec, NONE_ADDRESSING, "SEC"},
+    {0xF8, sed, NONE_ADDRESSING, "SED"},
+    {0x78, sei, NONE_ADDRESSING, "SEI"},
+    {0xAA, tax, NONE_ADDRESSING, "TAX"},
+    {0xA8, tay, NONE_ADDRESSING, "TAY"},
+    {0xBA, tsx, NONE_ADDRESSING, "TSX"},
+    {0x8A, txa, NONE_ADDRESSING, "TXA"},
+    {0x9A, txs, NONE_ADDRESSING, "TXS"},
+    {0x98, tya, NONE_ADDRESSING ,"TYA"},
+    // Immediate
+    {0x69, adc, IMMEDIATE, "ADC"},
+    {0x29, and, IMMEDIATE, "AND"},
+    {0xC9, cmp, IMMEDIATE, "CMP"},
+    {0xE0, cpx, IMMEDIATE, "CPX"},
+    {0xC0, cpy, IMMEDIATE, "CPY"},
+    {0xA9, lda, IMMEDIATE, "LDA"},
+    {0xA2, ldx, IMMEDIATE, "LDX"},
+    {0xA0, ldy, IMMEDIATE, "LDY"},
+    {0x09, ora, IMMEDIATE, "ORA"}
+};
+
 
 void run(Cpu* cpu, const unsigned char* program, int program_size) {
   load_program_to_memory(cpu, program, program_size);
+
   while (cpu->program_counter < program_size) {
     unsigned char opcode = read_from_memory(cpu, cpu->program_counter);
-    switch (opcode) {
-      // Implied
-      case 0x00:
-        cpu->program_counter += 1;
-        cpu->flags.break_command = 1;
-        printf("Instruction: BRK\n");
-        return;
-      case 0x18:
-        clc(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: CLC\n");
+
+    // Search for the opcode in the lookup table
+    int numOpcodes = sizeof(opcode_table) / sizeof(opcode_table[0]);
+    int opcodeFound = 0;
+    for (int i = 0; i < numOpcodes; i++) {
+      if (opcode_table[i].opcode == opcode) {
+        opcodeFound = 1;
+        opcode_table[i].func(cpu, opcode_table[i].mode);
+        printf("Instruction: %s\n", opcode_table[i].name);
         break;
-      case 0xD8:
-        cld(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: CLD\n");
-        break;
-      case 0x58:
-        cli(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: CLI\n");
-        break;
-      case 0xB8:
-        clv(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: CLV\n");
-        break;
-      case 0xCA:
-        dex(cpu);
-        printf("Instruction: DEX\n");
-        cpu->program_counter += 1;
-        break;
-      case 0x88:
-        dey(cpu);
-        printf("Instruction: DEY\n");
-        cpu->program_counter += 1;
-        break;
-      case 0xE8:
-        inx(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: INX\n");
-        break;
-      case 0xC8:
-        iny(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: INY\n");
-        break;
-      case 0xEA:
-        cpu->program_counter += 1;
-        printf("Instruction: NOP\n");
-        break;
-      case 0x48:
-        pha(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: PHA\n");
-        break;
-      case 0x08:
-        php(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: PHP\n");
-        break;
-      case 0x68:
-        pla(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: PLA\n");
-        break;
-      case 0x28:
-        plp(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: PLP\n");
-        break;
-      case 0x38:
-        sec(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: SEC\n");
-        break;
-      case 0xF8:
-        sed(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: SED\n");
-        break;
-      case 0x78:
-        sei(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: SEI\n");
-        break;
-      case 0xAA:
-        tax(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: TAX\n");
-        break;
-      case 0xA8:
-        tay(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: TAY\n");
-        break;
-      case 0xBA:
-        tsx(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: TSX\n");
-        break;
-      case 0x8A:
-        txa(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: TXA\n");
-        break;
-      case 0x9A:
-        txs(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: TXS\n");
-        break;
-      case 0x98:
-        tya(cpu);
-        cpu->program_counter += 1;
-        printf("Instruction: TYA\n");
-        break;
-        // Immediate
-      case 0x69:
-        adc(cpu, IMMEDIATE);
-        cpu->program_counter += 2;
-        printf("Instruction: ADC\n");
-        break;
-      case 0x29:
-        and(cpu, IMMEDIATE);
-        cpu->program_counter += 2;
-        printf("Instruction: AND\n");
-        break;
-      case 0xC9:
-        cmp(cpu, IMMEDIATE);
-        cpu->program_counter += 2;
-        printf("Instruction: CMP\n");
-        break;
-      case 0xE0:
-        cpx(cpu, IMMEDIATE);
-        cpu->program_counter += 2;
-        printf("Instruction: CPX\n");
-        break;
-      case 0xC0:
-        cpy(cpu, IMMEDIATE);
-        cpu->program_counter += 2;
-        printf("Instruction: CPY\n");
-        break;
-      case 0xA9:
-        assert(cpu->program_counter + 1 < MEMORY_SIZE);
-        addressing_mode mode = IMMEDIATE;
-        lda(cpu, mode);
-        cpu->program_counter += 2;
-        printf("Instruction: LDA\n");
-        break;
-      case 0xA2:
-        assert(cpu->program_counter + 1 < MEMORY_SIZE);
-        ldx(cpu, IMMEDIATE);
-        cpu->program_counter += 2;
-        printf("Instruction: LDX\n");
-        break;
-      case 0xA0:
-        assert(cpu->program_counter + 1 < MEMORY_SIZE);
-        ldy(cpu, IMMEDIATE);
-        cpu->program_counter += 2;
-        printf("Instruction: LDY\n");
-        break;
-      case 0x09:
-        ora(cpu, IMMEDIATE);
-        cpu->program_counter += 2;
-        printf("Instruction: ORA\n");
-        break;
-      default:
-        printf("Unknown opcode: %02X\n", opcode);
-        assert(0 && "Unknown opcode");
+      }
+    }
+
+    if (!opcodeFound) {
+      printf("Unknown opcode: %02X\n", opcode);
+      assert(0 && "Unknown opcode");
     }
   }
 }
