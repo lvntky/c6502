@@ -3,9 +3,8 @@
 
 #include "c_register.h"
 
-typedef struct c_cpu
-{
-    c_register_t reg;
+typedef struct c_cpu {
+	c_register_t reg;
 
 } c_cpu_t;
 

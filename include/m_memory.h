@@ -5,9 +5,8 @@
 
 #define M_MEMORY_SIZE (1 << 16)
 
-typedef struct m_memory
-{
-    uint16_t mem[M_MEMORY_SIZE];
+typedef struct m_memory {
+	uint16_t mem[M_MEMORY_SIZE];
 } m_memory_t;
 
 void m_reset(m_memory_t *mem);
