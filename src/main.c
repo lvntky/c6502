@@ -1,9 +1,14 @@
 #include <raylib.h>
+#include "../include/c_cpu.h"
+
+static c_cpu_t cpu;
 
 int main(void) {
     // Initialization
     const int screenWidth = 1280;
     const int screenHeight = 720;
+
+    c_reset(&cpu);
 
     InitWindow(screenWidth, screenHeight, "C6502");
 
