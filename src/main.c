@@ -1,8 +1,11 @@
 #include "../include/c_cpu.h"
 #include "../include/g_gui.h"
+#include "../include/m_memory.h"
 #include <raylib.h>
+#include <stdio.h>
 
 static c_cpu_t cpu;
+static m_memory_t memory;
 
 int main(void) {
     // Initialization
@@ -10,6 +13,7 @@ int main(void) {
     const int screenHeight = 720;
 
     c_reset(&cpu);
+    m_reset(&memory);
 
     InitWindow(screenWidth, screenHeight, "C6502");
 
@@ -18,14 +22,15 @@ int main(void) {
         // Draw
         BeginDrawing();
         ClearBackground(BLACK);
-        DrawText("c6502 Emulator and Debugger", 0, 0, 20, LIGHTGRAY);
+        DrawText("c6502 Emulator & Debugger", 0, 0, 20, LIGHTGRAY);
         EndDrawing();
 
         if(cpu.reg.pc != 1000000000) {
             cpu.reg.pc++;
         }
 
-        render_register_status(&cpu);
+        g_render_register_status(&cpu);
+        //g_render_memory(&memory);
     }
 
     // De-Initialization
