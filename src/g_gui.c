@@ -2,16 +2,20 @@
 #include <stdio.h>
 #include <raylib.h>
 
-#define MEMORY_DISPLAY_SIZE 256  // Number of memory locations to display
-#define MEMORY_COLUMNS 16        // Number of memory columns in the display grid
+#define MEMORY_DISPLAY_ROWS 16  // Number of memory rows to display
+#define MEMORY_DISPLAY_COLS 8   // Number of memory columns to display
+#define MEMORY_CELL_WIDTH 70    // Width of each memory cell
+#define MEMORY_CELL_HEIGHT 25   // Height of each memory cell
+#define MEMORY_DISPLAY_SIZE (MEMORY_DISPLAY_ROWS * MEMORY_DISPLAY_COLS)
 
+static int scrollOffset = 0;
 
 void g_render_register_status(c_cpu_t *cpu) {
     char buffer[128];
 
     // Define the position and size of the box
     int boxX = 50;
-    int boxY = 230;
+    int boxY = 50;
     int boxWidth = 350;
     int boxHeight = 250;
 
@@ -23,6 +27,8 @@ void g_render_register_status(c_cpu_t *cpu) {
     int textX = boxX + 10;
     int textY = boxY + 20;
     int textSpacing = 30;
+
+    DrawText("Register Status", boxX, boxY - 25, 22, RAYWHITE);
 
     // Print the Program Counter (PC)
     snprintf(buffer, sizeof(buffer), "PC: 0x%04X", cpu->reg.pc);
@@ -67,26 +73,49 @@ void g_render_register_status(c_cpu_t *cpu) {
     DrawText(buffer, textX, textY, 20, RAYWHITE);
 }
 
-/*
 void g_render_memory(m_memory_t *memory) {
     char buffer[128];
-    int startX = 350;  // Starting X position for the memory display
-    int startY = 250;  // Starting Y position for the memory display
-    int cellWidth = 80; // Width of each memory cell
-    int cellHeight = 20; // Height of each memory cell
 
-    for (int i = 0; i < MEMORY_DISPLAY_SIZE; i++) {
-        // Calculate row and column for the current memory cell
-        int row = i / MEMORY_COLUMNS;
-        int col = i % MEMORY_COLUMNS;
+    // Define the position and size of the memory display box
+    int boxX = 450;
+    int boxY = 50;
+    int boxWidth = MEMORY_DISPLAY_COLS * MEMORY_CELL_WIDTH + 85;
+    int boxHeight = MEMORY_DISPLAY_ROWS * MEMORY_CELL_HEIGHT + 20;
 
-        // Calculate the position to render the memory value
-        int xPos = startX + col * cellWidth;
-        int yPos = startY + row * cellHeight;
+    // Draw the memory display box
+    DrawRectangle(boxX, boxY, boxWidth, boxHeight, DARKGRAY);
+    DrawRectangleLines(boxX, boxY, boxWidth, boxHeight, LIGHTGRAY);
 
-        // Format and draw the memory value
-        snprintf(buffer, sizeof(buffer), "0x%04X: 0x%02X", i, memory->mem[i]);
-        DrawText(buffer, xPos, yPos, 20, LIGHTGRAY);
+    // Set the starting coordinates for the memory content
+    int textX = boxX + 10;
+    int textY = boxY + 10;
+
+    DrawText("Memory Status", boxX, boxY - 25, 22, RAYWHITE);
+
+
+    // Display memory cells
+    for (int row = 0; row < MEMORY_DISPLAY_ROWS; row++) {
+        snprintf(buffer, sizeof(buffer), "0x%04X:", scrollOffset + (row * MEMORY_DISPLAY_COLS));
+        DrawText(buffer, textX, textY + row * MEMORY_CELL_HEIGHT, 20, RAYWHITE);
+
+        for (int col = 0; col < MEMORY_DISPLAY_COLS; col++) {
+            int memIndex = scrollOffset + (row * MEMORY_DISPLAY_COLS) + col;
+            if (memIndex >= M_MEMORY_SIZE) break;
+
+            snprintf(buffer, sizeof(buffer), "%04X", memory->mem[memIndex]);
+            DrawText(buffer, textX + 90 + col * MEMORY_CELL_WIDTH, textY + row * MEMORY_CELL_HEIGHT, 20, RAYWHITE);
+        }
+    }
+
+    // Handle scrolling (Mouse Wheel or Keyboard)
+    if (IsKeyPressed(KEY_UP)) {
+        scrollOffset -= MEMORY_DISPLAY_COLS;  // Scroll up by one row
+        if (scrollOffset < 0) scrollOffset = 0;
+    }
+    if (IsKeyPressed(KEY_DOWN)) {
+        scrollOffset += MEMORY_DISPLAY_COLS;  // Scroll down by one row
+        if (scrollOffset > M_MEMORY_SIZE - MEMORY_DISPLAY_SIZE) {
+            scrollOffset = M_MEMORY_SIZE - MEMORY_DISPLAY_SIZE;
+        }
     }
 }
-*/

@@ -22,7 +22,7 @@ int main(void) {
         // Draw
         BeginDrawing();
         ClearBackground(BLACK);
-        DrawText("c6502 Emulator & Debugger", 0, 0, 20, LIGHTGRAY);
+        DrawText("c6502 Emulator & Debugger", 0, 700, 20, LIGHTGRAY);
         EndDrawing();
 
         if(cpu.reg.pc != 1000000000) {
@@ -30,7 +30,7 @@ int main(void) {
         }
 
         g_render_register_status(&cpu);
-        //g_render_memory(&memory);
+        g_render_memory(&memory);
     }
 
     // De-Initialization
