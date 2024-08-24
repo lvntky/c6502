@@ -1,5 +1,6 @@
-#include <raylib.h>
 #include "../include/c_cpu.h"
+#include "../include/g_gui.h"
+#include <raylib.h>
 
 static c_cpu_t cpu;
 
@@ -17,8 +18,14 @@ int main(void) {
         // Draw
         BeginDrawing();
         ClearBackground(BLACK);
-        DrawText("c6502 Emulator and Debugger", 190, 200, 20, LIGHTGRAY);
+        DrawText("c6502 Emulator and Debugger", 0, 0, 20, LIGHTGRAY);
         EndDrawing();
+
+        if(cpu.reg.pc != 1000000000) {
+            cpu.reg.pc++;
+        }
+
+        render_register_status(&cpu);
     }
 
     // De-Initialization
