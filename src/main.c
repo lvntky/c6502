@@ -25,9 +25,6 @@ int main(void) {
         DrawText("c6502 Emulator & Debugger", 0, 700, 20, LIGHTGRAY);
         EndDrawing();
 
-        if(cpu.reg.pc != 1000000000) {
-            cpu.reg.pc++;
-        }
 
         g_render_register_status(&cpu);
         g_render_memory(&memory);
