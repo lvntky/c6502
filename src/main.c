@@ -14,8 +14,6 @@ int main(void)
 	c_reset(&cpu);
 	m_reset(&memory);
 
-	m_write_byte(&memory, 0x600, 0x10);
-
 	InitWindow(U_SCREEN_WIDTH, U_SCREEN_HEIGHT, "C6502");
 
 	// Main emulation loop

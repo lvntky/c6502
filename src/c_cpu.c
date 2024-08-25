@@ -4,7 +4,7 @@ void c_reset(c_cpu_t *cpu)
 {
 	cpu->reg.acc ^= cpu->reg.acc;
 	cpu->reg.pc = 0x600;
-	cpu->reg.sp ^= cpu->reg.sp;
+	cpu->reg.sp = 0xFD;
 	cpu->reg.x ^= cpu->reg.x;
 	cpu->reg.y ^= cpu->reg.y;
 
