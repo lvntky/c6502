@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <raylib.h>
 
-#define MEMORY_DISPLAY_ROWS 16 // Number of memory rows to display
-#define MEMORY_DISPLAY_COLS 8 // Number of memory columns to display
+#define MEMORY_DISPLAY_ROWS 23 // Number of memory rows to display
+#define MEMORY_DISPLAY_COLS 1 // Number of memory columns to display
 #define MEMORY_CELL_WIDTH 70 // Width of each memory cell
 #define MEMORY_CELL_HEIGHT 25 // Height of each memory cell
 #define MEMORY_DISPLAY_SIZE (MEMORY_DISPLAY_ROWS * MEMORY_DISPLAY_COLS)
@@ -79,7 +79,7 @@ void g_render_memory(m_memory_t *memory)
 	char buffer[128];
 
 	// Define the position and size of the memory display box
-	int boxX = 450;
+	int boxX = 1080;
 	int boxY = 50;
 	int boxWidth = MEMORY_DISPLAY_COLS * MEMORY_CELL_WIDTH + 85;
 	int boxHeight = MEMORY_DISPLAY_ROWS * MEMORY_CELL_HEIGHT + 20;
@@ -107,7 +107,7 @@ void g_render_memory(m_memory_t *memory)
 			if (memIndex >= M_MEMORY_SIZE)
 				break;
 
-			snprintf(buffer, sizeof(buffer), "%04X",
+			snprintf(buffer, sizeof(buffer), "0x%02X",
 				 memory->mem[memIndex]);
 			DrawText(buffer, textX + 90 + col * MEMORY_CELL_WIDTH,
 				 textY + row * MEMORY_CELL_HEIGHT, 20,

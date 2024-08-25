@@ -10,5 +10,7 @@ typedef struct m_memory {
 } m_memory_t;
 
 void m_reset(m_memory_t *mem);
+uint8_t m_read_byte(m_memory_t *mem, uint16_t addr);
+void m_write_byte(m_memory_t *mem, uint16_t addr, uint8_t data);
 
 #endif //__M_MEMORY_H__

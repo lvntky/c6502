@@ -1,8 +1,10 @@
 #include "../include/c_cpu.h"
 #include "../include/g_gui.h"
 #include "../include/m_memory.h"
+#include "../include/u_config.h"
 #include <raylib.h>
 #include <stdio.h>
+#include <string.h>
 
 static c_cpu_t cpu;
 static m_memory_t memory;
@@ -16,6 +18,9 @@ int main(void)
 	c_reset(&cpu);
 	m_reset(&memory);
 
+	m_write_byte(&memory, 0x600, 0x10);
+	printf("data: %x\n", memory.mem[cpu.reg.pc]);
+
 	InitWindow(screenWidth, screenHeight, "C6502");
 
 	// Main emulation loop
@@ -23,7 +28,8 @@ int main(void)
 		// Draw
 		BeginDrawing();
 		ClearBackground(BLACK);
-		DrawText("c6502 Emulator & Debugger", 0, 700, 20, LIGHTGRAY);
+		DrawRectangle(0, 695, 1280, 25, LIME);
+		DrawText(U_PROGRAM_NAME, 0, 700, 20, WHITE);
 		EndDrawing();
 
 		g_render_register_status(&cpu);
