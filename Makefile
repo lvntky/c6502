@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -std=c99 -Iinclude
+CFLAGS = -Wall -Wextra -pedantic -Wshadow -Wformat=2 -Wnull-dereference -Wvla -fstack-protector-strong -std=c99 -Iinclude
 LIBS = -lraylib
 
 SRC_DIR = src

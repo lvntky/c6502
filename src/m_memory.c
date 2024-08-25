@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <stdlib.h>
 
+//TODO: write bound check macro
+
 #define CHECK_MEMORY(mem)    \
 	assert(mem != NULL); \
 	assert(mem->mem != NULL);
@@ -21,8 +23,5 @@ uint8_t m_read_byte(m_memory_t *mem, uint16_t addr)
 void m_write_byte(m_memory_t *mem, uint16_t addr, uint8_t data)
 {
 	CHECK_MEMORY(mem)
-	if (addr > (1 << 16)) {
-		exit(1);
-	}
 	mem->mem[addr] = data;
 }
