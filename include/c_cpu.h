@@ -19,6 +19,9 @@ typedef struct c_instruction {
 	uint8_t cycle;
 } c_instruction_t;
 
+/**
+ * Core CPU Functions
+ */
 void c_reset(c_cpu_t *cpu);
 
 #endif //__C_CPU_H__

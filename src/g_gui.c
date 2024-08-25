@@ -1,15 +1,13 @@
 #include "../include/g_gui.h"
 #include <stdio.h>
 #include <raylib.h>
+#include <string.h>
 
 #define MEMORY_DISPLAY_ROWS 10 // Number of memory rows to display
 #define MEMORY_DISPLAY_COLS 2 // Number of memory columns to display
 #define MEMORY_CELL_WIDTH 70 // Width of each memory cell
 #define MEMORY_CELL_HEIGHT 25 // Height of each memory cell
 #define MEMORY_DISPLAY_SIZE (MEMORY_DISPLAY_ROWS * MEMORY_DISPLAY_COLS)
-
-#define MAX_FILEPATH_RECORDED 4096
-#define MAX_FILEPATH_SIZE 2048
 
 static int scrollOffset = 0x0000;
 

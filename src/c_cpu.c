@@ -18,3 +18,17 @@ void c_reset(c_cpu_t *cpu)
 	SET_FLAG(cpu->reg, FLAG_UNUSED);
 	CLEAR_FLAG(cpu->reg, FLAG_ZERO);
 }
+
+static uint16_t immediate_address_mode(c_cpu_t *cpu)
+{
+	return cpu->reg.pc++;
+}
+
+void lda_handler(c_cpu_t *cpu, uint16_t address)
+{
+	// Do stuff
+}
+
+static const c_instruction_t instruction_set[] = {
+	{ 0xA9, ADDR_MODE_IMMEDIATE, immediate_address_mode, lda_handler, 2 }
+};
