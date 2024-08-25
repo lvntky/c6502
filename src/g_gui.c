@@ -8,6 +8,9 @@
 #define MEMORY_CELL_HEIGHT 25 // Height of each memory cell
 #define MEMORY_DISPLAY_SIZE (MEMORY_DISPLAY_ROWS * MEMORY_DISPLAY_COLS)
 
+#define MAX_FILEPATH_RECORDED 4096
+#define MAX_FILEPATH_SIZE 2048
+
 static int scrollOffset = 0;
 
 void g_render_register_status(c_cpu_t *cpu)
@@ -126,5 +129,41 @@ void g_render_memory(m_memory_t *memory)
 		   M_MEMORY_SIZE - MEMORY_DISPLAY_ROWS * MEMORY_DISPLAY_COLS) {
 		scrollOffset = M_MEMORY_SIZE -
 			       MEMORY_DISPLAY_ROWS * MEMORY_DISPLAY_COLS;
+	}
+}
+
+void g_load_bin(m_memory_t *mem)
+{
+	int filePathCounter = 0;
+
+	char *filePaths[MAX_FILEPATH_RECORDED] = {
+		0
+	}; // We will register a maximum of filepaths
+
+	// Allocate space for the required file paths
+	for (int i = 0; i < MAX_FILEPATH_RECORDED; i++) {
+		filePaths[i] = (char *)RL_CALLOC(MAX_FILEPATH_SIZE, 1);
+	}
+
+	if (IsFileDropped()) {
+		FilePathList droppedFiles = LoadDroppedFiles();
+
+		for (int i = 0, offset = filePathCounter;
+		     i < (int)droppedFiles.count; i++) {
+			if (filePathCounter < (MAX_FILEPATH_RECORDED - 1)) {
+				TextCopy(filePaths[offset + i],
+					 droppedFiles.paths[i]);
+				filePathCounter++;
+			}
+		}
+
+		UnloadDroppedFiles(
+			droppedFiles); // Unload filepaths from memory
+
+		m_load_bin(mem, *filePaths);
+
+		for (int i = 0; i < MAX_FILEPATH_RECORDED; i++) {
+			RL_FREE(filePaths[i]); // Free allocated memory for all filepaths
+		}
 	}
 }

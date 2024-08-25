@@ -24,6 +24,9 @@ int main(void)
 		DrawRectangle(0, 695, 1280, 25, LIME);
 		DrawText(U_PROGRAM_NAME, 0, 700, 20, WHITE);
 
+		// temporary added for testing memory bin load
+		g_load_bin(&memory);
+
 		g_render_register_status(&cpu);
 		g_render_memory(&memory);
 
