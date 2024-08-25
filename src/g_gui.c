@@ -79,9 +79,9 @@ void g_render_memory(m_memory_t *memory)
 	char buffer[128];
 
 	// Define the position and size of the memory display box
-	int boxX = 1080;
+	int boxX = 1000;
 	int boxY = 50;
-	int boxWidth = MEMORY_DISPLAY_COLS * MEMORY_CELL_WIDTH + 85;
+	int boxWidth = MEMORY_DISPLAY_COLS * MEMORY_CELL_WIDTH + 150;
 	int boxHeight = MEMORY_DISPLAY_ROWS * MEMORY_CELL_HEIGHT + 20;
 
 	// Draw the memory display box
@@ -109,22 +109,22 @@ void g_render_memory(m_memory_t *memory)
 
 			snprintf(buffer, sizeof(buffer), "0x%02X",
 				 memory->mem[memIndex]);
-			DrawText(buffer, textX + 90 + col * MEMORY_CELL_WIDTH,
+			DrawText(buffer, textX + 150 + col * MEMORY_CELL_WIDTH,
 				 textY + row * MEMORY_CELL_HEIGHT, 20,
 				 RAYWHITE);
 		}
 	}
 
-	// Handle scrolling (Mouse Wheel or Keyboard)
-	if (IsKeyPressed(KEY_UP)) {
-		scrollOffset -= MEMORY_DISPLAY_COLS; // Scroll up by one row
-		if (scrollOffset < 0)
-			scrollOffset = 0;
-	}
-	if (IsKeyPressed(KEY_DOWN)) {
-		scrollOffset += MEMORY_DISPLAY_COLS; // Scroll down by one row
-		if (scrollOffset > M_MEMORY_SIZE - MEMORY_DISPLAY_SIZE) {
-			scrollOffset = M_MEMORY_SIZE - MEMORY_DISPLAY_SIZE;
-		}
+	int scroll_action = (int)(GetMouseWheelMove() * 4);
+
+	scrollOffset -= scroll_action;
+
+	// Ensure scrollOffset stays within valid bounds
+	if (scrollOffset < 0) {
+		scrollOffset = 0;
+	} else if (scrollOffset >
+		   M_MEMORY_SIZE - MEMORY_DISPLAY_ROWS * MEMORY_DISPLAY_COLS) {
+		scrollOffset = M_MEMORY_SIZE -
+			       MEMORY_DISPLAY_ROWS * MEMORY_DISPLAY_COLS;
 	}
 }
