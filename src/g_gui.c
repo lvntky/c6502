@@ -131,8 +131,3 @@ void g_render_memory(m_memory_t *memory)
 			       MEMORY_DISPLAY_ROWS * MEMORY_DISPLAY_COLS;
 	}
 }
-
-void g_load_bin(m_memory_t *mem)
-{
-
-}

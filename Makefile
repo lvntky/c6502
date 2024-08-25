@@ -14,7 +14,7 @@ HEADERS = $(wildcard $(INC_DIR)/*.h)
 # Create corresponding .o files in the BUILD_DIR
 OBJ = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SRC))
 
-all: $(TARGET)
+all: format $(TARGET)
 
 $(TARGET): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
@@ -31,7 +31,7 @@ clean:
 	rm -rf $(BUILD_DIR) $(TARGET)
 
 run: ${TARGET}
-	./${TARGET}
+	./${TARGET} sample/6502_functional_test.bin
 
 format:
 	clang-format -i $(SRC) $(HEADERS)

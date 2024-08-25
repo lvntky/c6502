@@ -5,14 +5,22 @@
 #include <raylib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 static c_cpu_t cpu;
 static m_memory_t memory;
 
-int main(void)
+int main(int argc, char **argv)
 {
+	if (argc < 2) {
+		fprintf(stderr, "Please specify file to load.\n");
+		exit(EXIT_FAILURE);
+	}
+
 	c_reset(&cpu);
 	m_reset(&memory);
+
+	m_load_bin(&memory, argv[1]);
 
 	InitWindow(U_SCREEN_WIDTH, U_SCREEN_HEIGHT, "C6502");
 
@@ -23,9 +31,6 @@ int main(void)
 		ClearBackground(BLACK);
 		DrawRectangle(0, 695, 1280, 25, LIME);
 		DrawText(U_PROGRAM_NAME, 0, 700, 20, WHITE);
-
-		// temporary added for testing memory bin load
-		g_load_bin(&memory);
 
 		g_render_register_status(&cpu);
 		g_render_memory(&memory);
