@@ -20,9 +20,7 @@ int main(int argc, char **argv)
 	c_reset(&cpu);
 	m_reset(&memory);
 
-	//m_load_bin(&memory, argv[1]);
-	memory.mem[0xFFFC] = 0xA9;
-	memory.mem[0xFFFD] = 0x00;
+	m_load_bin(&memory, argv[1]);
 
 	InitWindow(U_SCREEN_WIDTH, U_SCREEN_HEIGHT, "C6502");
 

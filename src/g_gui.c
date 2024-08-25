@@ -9,6 +9,11 @@
 #define MEMORY_CELL_HEIGHT 25 // Height of each memory cell
 #define MEMORY_DISPLAY_SIZE (MEMORY_DISPLAY_ROWS * MEMORY_DISPLAY_COLS)
 
+#define DISASSEMBLY_DISPLAY_ROWS 20 // Number of disassembly rows to display
+#define DISASSEMBLY_DISPLAY_SIZE (DISASSEMBLY_DISPLAY_ROWS * 16)
+
+#define MAX_INPUT_CHARS 32
+
 static int scrollOffset = 0x0000;
 
 void g_render_register_status(c_cpu_t *cpu)

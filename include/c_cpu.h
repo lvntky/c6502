@@ -4,6 +4,7 @@
 #include "c_register.h"
 #include "m_memory.h"
 #include "c_address_mode.h"
+#include <stdbool.h>
 
 #define EXECUTE_SUCCESS 0
 #define EXECUTE_FAIL 1

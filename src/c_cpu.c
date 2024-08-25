@@ -1,6 +1,8 @@
 #include "../include/c_cpu.h"
 #include <stdio.h>
 
+static bool exec_status = true;
+
 void c_reset(c_cpu_t *cpu)
 {
 	cpu->reg.acc ^= cpu->reg.acc;
@@ -45,11 +47,9 @@ static c_instruction_t instruction_set[] = {
 	{ 0xA9, ADDR_MODE_IMMEDIATE, immediate_address_mode, lda_handler, 2 }
 };
 
-static int exec_status = 0;
-
 void c_execute(c_cpu_t *cpu, m_memory_t *memory)
 {
-	if (exec_status != 1) {
+	if (exec_status) {
 		uint8_t opcode = memory->mem[cpu->reg.pc++];
 		c_instruction_t *instruction = NULL;
 
@@ -68,8 +68,8 @@ void c_execute(c_cpu_t *cpu, m_memory_t *memory)
 			instruction->opcode_handler(cpu, memory, address);
 
 		} else {
-			printf("UNHANDLED OPCODE 0x%4X\n", opcode);
-			exec_status = 1;
+			printf("UNHANDLED OPCODE 0x%04x\n", opcode);
+			exec_status = false;
 		}
 	}
 }

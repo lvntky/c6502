@@ -6,5 +6,6 @@
 
 void g_render_register_status(c_cpu_t *cpu);
 void g_render_memory(m_memory_t *mem);
+void g_render_disassembly(c_cpu_t *cpu, m_memory_t *memory);
 
 #endif //__G_GUI_H__
