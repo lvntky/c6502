@@ -15,6 +15,6 @@ void c_reset(c_cpu_t *cpu)
 	CLEAR_FLAG(cpu->reg, FLAG_INTERRUPT);
 	CLEAR_FLAG(cpu->reg, FLAG_NEGATIVE);
 	CLEAR_FLAG(cpu->reg, FLAG_OVERFLOW);
-	CLEAR_FLAG(cpu->reg, FLAG_UNUSED);
+	SET_FLAG(cpu->reg, FLAG_UNUSED);
 	CLEAR_FLAG(cpu->reg, FLAG_ZERO);
 }
