@@ -1,7 +1,7 @@
 #include "../include/g_gui.h"
 #include <stdio.h>
-#include <raylib.h>
 #include <string.h>
+#include "../include/u_config.h"
 
 #define MEMORY_DISPLAY_ROWS 10 // Number of memory rows to display
 #define MEMORY_DISPLAY_COLS 2 // Number of memory columns to display
@@ -21,10 +21,10 @@ void g_render_register_status(c_cpu_t *cpu)
 	char buffer[128];
 
 	// Define the position and size of the box
-	int boxX = 50;
-	int boxY = 50;
 	int boxWidth = 350;
 	int boxHeight = 255;
+	int boxX = U_SCREEN_WIDTH - (boxWidth + 50);
+	int boxY = 50;
 
 	// Draw the box
 	DrawRectangle(boxX, boxY, boxWidth, boxHeight, DARKGRAY);
@@ -85,10 +85,11 @@ void g_render_memory(m_memory_t *memory)
 	char buffer[128];
 
 	// Define the position and size of the memory display box
-	int boxX = 50;
-	int boxY = 370;
+
 	int boxWidth = 350;
 	int boxHeight = 255;
+	int boxX = U_SCREEN_WIDTH - (boxWidth + 50);
+	int boxY = 370;
 
 	// Draw the memory display box
 	DrawRectangle(boxX, boxY, boxWidth, boxHeight, DARKGRAY);
@@ -144,4 +145,31 @@ void g_render_memory(m_memory_t *memory)
 				MEMORY_DISPLAY_ROWS * MEMORY_DISPLAY_COLS;
 		}
 	}
+}
+
+bool g_render_button(g_button_t *button)
+{
+	Vector2 mousePoint = GetMousePosition();
+	bool clicked = false;
+
+	if (CheckCollisionPointRec(mousePoint, button->bounds)) {
+		DrawRectangleRec(button->bounds, button->hover_color);
+		if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON)) {
+			clicked = true;
+		}
+	} else {
+		DrawRectangleRec(button->bounds, button->color);
+	}
+
+	// Draw button text centered
+	int textWidth =
+		MeasureText(button->text, 20); // Assuming font size is 20
+	int textHeight = 20; // Assuming font size is 20
+	DrawText(button->text,
+		 button->bounds.x + (button->bounds.width / 2 - textWidth / 2),
+		 button->bounds.y +
+			 (button->bounds.height / 2 - textHeight / 2),
+		 20, button->text_color);
+
+	return clicked;
 }

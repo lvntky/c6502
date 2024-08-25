@@ -20,9 +20,19 @@ int main(int argc, char **argv)
 	c_reset(&cpu);
 	m_reset(&memory);
 
-	m_load_bin(&memory, argv[1]);
+	//m_load_bin(&memory, argv[1]);
+	memory.mem[0x0000] = 0xA9;
+	memory.mem[0x0001] = 0x08;
+	memory.mem[0x0002] = 0xA9;
+	memory.mem[0x0003] = 0x10;
 
 	InitWindow(U_SCREEN_WIDTH, U_SCREEN_HEIGHT, "C6502");
+
+	g_button_t start_button = { .bounds = { 350, 200, 100, 50 },
+				    .text = "Start",
+				    .color = GRAY,
+				    .hover_color = LIGHTGRAY,
+				    .text_color = BLACK };
 
 	// Main emulation loop
 	while (!WindowShouldClose()) {

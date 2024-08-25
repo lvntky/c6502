@@ -6,7 +6,7 @@ static bool exec_status = true;
 void c_reset(c_cpu_t *cpu)
 {
 	cpu->reg.acc ^= cpu->reg.acc;
-	cpu->reg.pc = 0xFFFC;
+	cpu->reg.pc = 0x0000;
 	cpu->reg.sp = 0x0100;
 	cpu->reg.x ^= cpu->reg.x;
 	cpu->reg.y ^= cpu->reg.y;
@@ -24,7 +24,8 @@ void c_reset(c_cpu_t *cpu)
 
 static uint16_t immediate_address_mode(c_cpu_t *cpu)
 {
-	return cpu->reg.pc++;
+	// current opcode + 1;
+	return cpu->reg.pc + 1;
 }
 
 void lda_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
