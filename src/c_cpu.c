@@ -1,4 +1,5 @@
 #include "../include/c_cpu.h"
+#include <stdio.h>
 
 void c_reset(c_cpu_t *cpu)
 {
@@ -24,11 +25,51 @@ static uint16_t immediate_address_mode(c_cpu_t *cpu)
 	return cpu->reg.pc++;
 }
 
-void lda_handler(c_cpu_t *cpu, uint16_t address)
+void lda_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 {
-	// Do stuff
+	cpu->reg.acc = mem->mem[address];
+	if (cpu->reg.acc == 0) {
+		SET_FLAG(cpu->reg, FLAG_ZERO);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_ZERO);
+	}
+	// Update negative flag
+	if (cpu->reg.acc & 0x80) {
+		SET_FLAG(cpu->reg, FLAG_NEGATIVE);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_NEGATIVE);
+	}
 }
 
-static const c_instruction_t instruction_set[] = {
+static c_instruction_t instruction_set[] = {
 	{ 0xA9, ADDR_MODE_IMMEDIATE, immediate_address_mode, lda_handler, 2 }
 };
+
+static int exec_status = 0;
+
+void c_execute(c_cpu_t *cpu, m_memory_t *memory)
+{
+	if (exec_status != 1) {
+		uint8_t opcode = memory->mem[cpu->reg.pc++];
+		c_instruction_t *instruction = NULL;
+
+		size_t set_size =
+			sizeof(instruction_set) / sizeof(c_instruction_t);
+
+		for (size_t i = 0; i < set_size; i++) {
+			if (opcode == instruction_set[i].opcode) {
+				instruction = &instruction_set[i];
+				break;
+			}
+		}
+
+		if (instruction) {
+			uint16_t address = instruction->add_mode_handler(cpu);
+			instruction->opcode_handler(cpu, memory, address);
+
+		} else {
+			printf("UNHANDLED OPCODE 0x%4X\n", opcode);
+			exec_status = 1;
+		}
+	}
+}

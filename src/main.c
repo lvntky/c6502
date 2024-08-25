@@ -20,7 +20,9 @@ int main(int argc, char **argv)
 	c_reset(&cpu);
 	m_reset(&memory);
 
-	m_load_bin(&memory, argv[1]);
+	//m_load_bin(&memory, argv[1]);
+	memory.mem[0xFFFC] = 0xA9;
+	memory.mem[0xFFFD] = 0x00;
 
 	InitWindow(U_SCREEN_WIDTH, U_SCREEN_HEIGHT, "C6502");
 
@@ -31,6 +33,8 @@ int main(int argc, char **argv)
 		ClearBackground(BLACK);
 		DrawRectangle(0, 695, 1280, 25, LIME);
 		DrawText(U_PROGRAM_NAME, 0, 700, 20, WHITE);
+
+		c_execute(&cpu, &memory);
 
 		g_render_register_status(&cpu);
 		g_render_memory(&memory);

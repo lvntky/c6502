@@ -49,8 +49,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## Acknowledgments
 
-- The 6502 CPU emulator is based on the original architecture specifications and reference implementations.
-- Thanks to the open-source community for providing helpful resources and libraries.
+- [Obelisk/Archive.org](https://web.archive.org/web/20190611003956/http://www.obelisk.me.uk/6502/)
 
 ## Contact
 

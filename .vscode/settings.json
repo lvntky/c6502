@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "g_gui.h": "c"
+        "g_gui.h": "c",
+        "stdlib.h": "c",
+        "c_cpu.h": "c"
     }
 }
