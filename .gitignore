@@ -1,3 +1,4 @@
+c6502
 .idea
 ### C++ ###
 # Prerequisites
@@ -39,7 +40,6 @@ CMakeCache.txt
 CMakeFiles
 CMakeScripts
 Testing
-Makefile
 cmake_install.cmake
 install_manifest.txt
 compile_commands.json
@@ -178,3 +178,4 @@ fabric.properties
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
 /build/*
+sample/
