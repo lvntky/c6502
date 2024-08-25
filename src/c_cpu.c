@@ -1,4 +1,5 @@
 #include "../include/c_cpu.h"
+#include "../include/u_util.h"
 #include <stdio.h>
 
 static bool exec_status = true;
@@ -22,10 +23,18 @@ void c_reset(c_cpu_t *cpu)
 	CLEAR_FLAG(cpu->reg, FLAG_ZERO);
 }
 
-static uint16_t immediate_address_mode(c_cpu_t *cpu)
+static uint16_t immediate_address_mode(c_cpu_t *cpu, m_memory_t *mem)
 {
+	UNUSED(mem);
 	// current opcode + 1;
 	return cpu->reg.pc + 1;
+}
+
+static uint16_t absoulute_address_mode(c_cpu_t *cpu, m_memory_t *mem)
+{
+	uint16_t address = mem->mem[cpu->reg.pc + 1] |
+			   (mem->mem[cpu->reg.pc + 1]);
+	return address;
 }
 
 void lda_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
@@ -44,8 +53,17 @@ void lda_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 	}
 }
 
+void jmp_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
+{
+	printf("address: 0x%04x\n", address);
+	cpu->reg.pc = address;
+}
+
 static c_instruction_t instruction_set[] = {
-	{ 0xA9, ADDR_MODE_IMMEDIATE, immediate_address_mode, lda_handler, 2 }
+	{ 0xA9, ADDR_MODE_IMMEDIATE, immediate_address_mode, lda_handler,
+	  2 }, // LDA
+	{ 0x4C, ADDR_MODE_ABSOLUTE, absoulute_address_mode, jmp_handler,
+	  3 } // JMP
 };
 
 void c_execute(c_cpu_t *cpu, m_memory_t *memory)
@@ -65,9 +83,10 @@ void c_execute(c_cpu_t *cpu, m_memory_t *memory)
 		}
 
 		if (instruction) {
-			uint16_t address = instruction->add_mode_handler(cpu);
-			instruction->opcode_handler(cpu, memory, address);
+			uint16_t address =
+				instruction->add_mode_handler(cpu, memory);
 			cpu->reg.pc += instruction->cycle;
+			instruction->opcode_handler(cpu, memory, address);
 		} else {
 			printf("UNHANDLED OPCODE 0x%04x\n", opcode);
 			exec_status = false;

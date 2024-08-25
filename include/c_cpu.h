@@ -14,7 +14,7 @@ typedef struct c_cpu {
 } c_cpu_t;
 
 // Function pointer for address mode handler
-typedef uint16_t (*address_mode_handler)(c_cpu_t *cpu);
+typedef uint16_t (*address_mode_handler)(c_cpu_t *cpu, m_memory_t *mem);
 
 typedef struct c_instruction {
 	uint8_t opcode;
