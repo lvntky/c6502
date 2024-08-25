@@ -11,17 +11,12 @@ static m_memory_t memory;
 
 int main(void)
 {
-	// Initialization
-	const int screenWidth = 1280;
-	const int screenHeight = 720;
-
 	c_reset(&cpu);
 	m_reset(&memory);
 
 	m_write_byte(&memory, 0x600, 0x10);
-	printf("data: %x\n", memory.mem[cpu.reg.pc]);
 
-	InitWindow(screenWidth, screenHeight, "C6502");
+	InitWindow(U_SCREEN_WIDTH, U_SCREEN_HEIGHT, "C6502");
 
 	// Main emulation loop
 	while (!WindowShouldClose()) {
