@@ -1,7 +1,7 @@
 #ifndef __C_ADDRESS_MODE_H__
 #define __C_ADDRESS_MODE_H__
 
-enum c_address_mode {
+typedef enum c_address_mode {
 	ADDR_MODE_IMMEDIATE = 0, // Immediate mode (e.g., #$12)
 	ADDR_MODE_ZERO_PAGE, // Zero Page mode (e.g., $00)
 	ADDR_MODE_ZERO_PAGE_X, // Zero Page mode with X register (e.g., $00,X)
@@ -14,6 +14,6 @@ enum c_address_mode {
 	ADDR_MODE_INDIRECT_Y, // Indirect Indexed mode (e.g., ($00),Y)
 	ADDR_MODE_RELATIVE, // Relative mode (e.g., $12)
 	ADDR_MODE_IMPLIED // Implied mode (e.g., no operand)
-};
+} address_mode_t;
 
 #endif //__C_ADDRESS_MODE_H__

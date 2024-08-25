@@ -3,7 +3,7 @@
 #include <raylib.h>
 
 #define MEMORY_DISPLAY_ROWS 10 // Number of memory rows to display
-#define MEMORY_DISPLAY_COLS 1 // Number of memory columns to display
+#define MEMORY_DISPLAY_COLS 2 // Number of memory columns to display
 #define MEMORY_CELL_WIDTH 70 // Width of each memory cell
 #define MEMORY_CELL_HEIGHT 25 // Height of each memory cell
 #define MEMORY_DISPLAY_SIZE (MEMORY_DISPLAY_ROWS * MEMORY_DISPLAY_COLS)
@@ -11,7 +11,7 @@
 #define MAX_FILEPATH_RECORDED 4096
 #define MAX_FILEPATH_SIZE 2048
 
-static int scrollOffset = 0;
+static int scrollOffset = 0x0000;
 
 void g_render_register_status(c_cpu_t *cpu)
 {
@@ -40,7 +40,7 @@ void g_render_register_status(c_cpu_t *cpu)
 
 	// Print the Stack Pointer (SP)
 	textY += textSpacing;
-	snprintf(buffer, sizeof(buffer), "SP: 0x%02X", cpu->reg.sp);
+	snprintf(buffer, sizeof(buffer), "SP: 0x%04X", cpu->reg.sp);
 	DrawText(buffer, textX, textY, 20, RAYWHITE);
 
 	// Print the Accumulator (A)
@@ -118,16 +118,27 @@ void g_render_memory(m_memory_t *memory)
 		}
 	}
 
-	int scroll_action = (int)(GetMouseWheelMove() * 4);
+	int mouseX = GetMouseX();
+	int mouseY = GetMouseY();
 
-	scrollOffset -= scroll_action;
+	// Check if the mouse is within the memory display box
+	bool isMouseInBox = (mouseX >= boxX && mouseX <= (boxX + boxWidth) &&
+			     mouseY >= boxY && mouseY <= (boxY + boxHeight));
 
-	// Ensure scrollOffset stays within valid bounds
-	if (scrollOffset < 0) {
-		scrollOffset = 0;
-	} else if (scrollOffset >
-		   M_MEMORY_SIZE - MEMORY_DISPLAY_ROWS * MEMORY_DISPLAY_COLS) {
-		scrollOffset = M_MEMORY_SIZE -
-			       MEMORY_DISPLAY_ROWS * MEMORY_DISPLAY_COLS;
+	if (isMouseInBox) {
+		int scroll_action = (int)(GetMouseWheelMove() * 4);
+
+		scrollOffset -= scroll_action;
+
+		// Ensure scrollOffset stays within valid bounds
+		if (scrollOffset < 0) {
+			scrollOffset = 0;
+		} else if (scrollOffset >
+			   M_MEMORY_SIZE -
+				   MEMORY_DISPLAY_ROWS * MEMORY_DISPLAY_COLS) {
+			scrollOffset =
+				M_MEMORY_SIZE -
+				MEMORY_DISPLAY_ROWS * MEMORY_DISPLAY_COLS;
+		}
 	}
 }

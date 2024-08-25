@@ -29,7 +29,7 @@
 
 typedef struct c_register {
 	uint16_t pc;
-	uint8_t sp;
+	uint16_t sp;
 	uint8_t acc;
 	uint8_t x;
 	uint8_t y;
