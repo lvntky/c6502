@@ -1,5 +1,7 @@
 # c6502 | 6502 CPU Emulator
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a5c2e47531864725850a9e7e30705971)](https://app.codacy.com/gh/lvntky/c6502/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
 This is a simple emulator for the 6502 CPU written in C. The emulator allows you to run programs written for the 6502 architecture on modern systems.
 
 ## Features
