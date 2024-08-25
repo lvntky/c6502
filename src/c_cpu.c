@@ -50,7 +50,7 @@ static c_instruction_t instruction_set[] = {
 void c_execute(c_cpu_t *cpu, m_memory_t *memory)
 {
 	if (exec_status) {
-		uint8_t opcode = memory->mem[cpu->reg.pc++];
+		uint8_t opcode = memory->mem[cpu->reg.pc];
 		c_instruction_t *instruction = NULL;
 
 		size_t set_size =
@@ -66,7 +66,7 @@ void c_execute(c_cpu_t *cpu, m_memory_t *memory)
 		if (instruction) {
 			uint16_t address = instruction->add_mode_handler(cpu);
 			instruction->opcode_handler(cpu, memory, address);
-
+			cpu->reg.pc += instruction->cycle;
 		} else {
 			printf("UNHANDLED OPCODE 0x%04x\n", opcode);
 			exec_status = false;

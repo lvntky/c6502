@@ -22,6 +22,7 @@ typedef struct c_instruction {
 	address_mode_handler add_mode_handler;
 	void (*opcode_handler)(c_cpu_t *cpu, m_memory_t *mem,
 			       uint16_t address); // opcpode handler
+	uint8_t cycle;
 } c_instruction_t;
 
 /**
