@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <raylib.h>
 
-#define MEMORY_DISPLAY_ROWS 23 // Number of memory rows to display
+#define MEMORY_DISPLAY_ROWS 10 // Number of memory rows to display
 #define MEMORY_DISPLAY_COLS 1 // Number of memory columns to display
 #define MEMORY_CELL_WIDTH 70 // Width of each memory cell
 #define MEMORY_CELL_HEIGHT 25 // Height of each memory cell
@@ -21,7 +21,7 @@ void g_render_register_status(c_cpu_t *cpu)
 	int boxX = 50;
 	int boxY = 50;
 	int boxWidth = 350;
-	int boxHeight = 250;
+	int boxHeight = 255;
 
 	// Draw the box
 	DrawRectangle(boxX, boxY, boxWidth, boxHeight, DARKGRAY);
@@ -82,10 +82,10 @@ void g_render_memory(m_memory_t *memory)
 	char buffer[128];
 
 	// Define the position and size of the memory display box
-	int boxX = 1000;
-	int boxY = 50;
-	int boxWidth = MEMORY_DISPLAY_COLS * MEMORY_CELL_WIDTH + 150;
-	int boxHeight = MEMORY_DISPLAY_ROWS * MEMORY_CELL_HEIGHT + 20;
+	int boxX = 50;
+	int boxY = 370;
+	int boxWidth = 350;
+	int boxHeight = 255;
 
 	// Draw the memory display box
 	DrawRectangle(boxX, boxY, boxWidth, boxHeight, DARKGRAY);
