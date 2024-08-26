@@ -30,6 +30,20 @@ int main(int argc, char **argv)
 				    .hover_color = LIGHTGRAY,
 				    .text_color = BLACK };
 
+	g_button_t stop_button = { .bounds = { 500, 200, 100, 50 },
+				   .text = "Stop",
+				   .color = GRAY,
+				   .hover_color = LIGHTGRAY,
+				   .text_color = BLACK };
+
+	g_button_t step_button = { .bounds = { 650, 200, 100, 50 },
+				   .text = "Step",
+				   .color = GRAY,
+				   .hover_color = LIGHTGRAY,
+				   .text_color = BLACK };
+
+	bool is_running = false; // To control execution state
+
 	// Main emulation loop
 	while (!WindowShouldClose()) {
 		// Draw
@@ -38,7 +52,24 @@ int main(int argc, char **argv)
 		DrawRectangle(0, 695, 1280, 25, LIME);
 		DrawText(U_PROGRAM_NAME, 0, 700, 20, WHITE);
 
-		c_execute(&cpu, &memory);
+		if (g_render_button(&start_button)) {
+			is_running = true; // Start continuous execution
+		}
+
+		if (g_render_button(&stop_button)) {
+			is_running = false; // Stop continuous execution
+		}
+
+		if (g_render_button(&step_button)) {
+			c_execute(
+				&cpu,
+				&memory); // Execute one opcode if Step button is clicked
+		}
+
+		// Execute continuously if running
+		if (is_running) {
+			c_execute(&cpu, &memory);
+		}
 
 		g_render_register_status(&cpu);
 		g_render_memory(&memory);

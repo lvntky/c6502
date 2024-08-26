@@ -89,7 +89,8 @@ void c_execute(c_cpu_t *cpu, m_memory_t *memory)
 			instruction->opcode_handler(cpu, memory, address);
 		} else {
 			printf("UNHANDLED OPCODE 0x%04x\n", opcode);
-			exec_status = false;
+			//exec_status = false;
+			cpu->reg.pc++;
 		}
 	}
 }
