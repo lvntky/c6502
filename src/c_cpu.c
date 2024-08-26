@@ -1,6 +1,7 @@
 #include "../include/c_cpu.h"
 #include "../include/u_util.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 static bool exec_status = true;
 
@@ -32,9 +33,85 @@ static uint16_t immediate_address_mode(c_cpu_t *cpu, m_memory_t *mem)
 
 static uint16_t absoulute_address_mode(c_cpu_t *cpu, m_memory_t *mem)
 {
-	uint16_t address = mem->mem[cpu->reg.pc + 1] |
-			   (mem->mem[cpu->reg.pc + 2]);
+	uint16_t address =
+		((mem->mem[cpu->reg.pc + 2] << 8) | mem->mem[cpu->reg.pc + 1]);
 	return address;
+}
+
+static uint16_t absolute_x_address_mode(c_cpu_t *cpu, m_memory_t *mem)
+{
+	uint16_t address =
+		((mem->mem[cpu->reg.pc + 2] << 8) | mem->mem[cpu->reg.pc + 1]) +
+		cpu->reg.x;
+	return address;
+}
+
+static uint16_t absolute_y_address_mode(c_cpu_t *cpu, m_memory_t *mem)
+{
+	uint16_t address =
+		((mem->mem[cpu->reg.pc + 2] << 8) | mem->mem[cpu->reg.pc + 1]) +
+		cpu->reg.y;
+	return address;
+}
+
+static uint16_t zero_page_address_mode(c_cpu_t *cpu, m_memory_t *mem)
+{
+	uint16_t address = mem->mem[cpu->reg.pc + 1];
+	if (address < 0x00 || address > 0xff) {
+		printf("zero page addressing out of bounds: 0x%d\n", address);
+		exit(EXIT_FAILURE);
+	}
+
+	return address;
+}
+
+static uint16_t zero_page_x_address_mode(c_cpu_t *cpu, m_memory_t *mem)
+{
+	uint16_t address = (mem->mem[cpu->reg.pc + 1] + cpu->reg.x) & 0xFF;
+	return address;
+}
+
+static uint16_t zero_page_y_address_mode(c_cpu_t *cpu, m_memory_t *mem)
+{
+	uint16_t address = (mem->mem[cpu->reg.pc + 1] + cpu->reg.y) & 0xFF;
+	return address;
+}
+
+static uint16_t implied_address_mode(c_cpu_t *cpu, m_memory_t *mem)
+{
+	UNUSED(cpu);
+	UNUSED(mem);
+	return 0; // No address needed
+}
+
+static uint16_t indirect_address_mode(c_cpu_t *cpu, m_memory_t *mem)
+{
+	uint16_t pointer = (mem->mem[cpu->reg.pc + 2] << 8) |
+			   mem->mem[cpu->reg.pc + 1];
+	uint16_t address = (mem->mem[pointer + 1] << 8) | mem->mem[pointer];
+	return address;
+}
+
+static uint16_t indirect_x_address_mode(c_cpu_t *cpu, m_memory_t *mem)
+{
+	uint8_t pointer = (mem->mem[cpu->reg.pc + 1] + cpu->reg.x) & 0xFF;
+	uint16_t address = (mem->mem[pointer + 1] << 8) | mem->mem[pointer];
+	return address;
+}
+
+static uint16_t indirect_y_address_mode(c_cpu_t *cpu, m_memory_t *mem)
+{
+	uint8_t pointer = mem->mem[cpu->reg.pc + 1];
+	uint16_t address =
+		((mem->mem[pointer + 1] << 8) | mem->mem[pointer]) + cpu->reg.y;
+	return address;
+}
+
+// Im not sure of that
+static uint16_t relative_address_mode(c_cpu_t *cpu, m_memory_t *mem)
+{
+	int8_t offset = mem->mem[cpu->reg.pc + 1];
+	return cpu->reg.pc + 2 + offset;
 }
 
 void lda_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
@@ -55,7 +132,7 @@ void lda_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 
 void jmp_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 {
-	printf("address: 0x%04x\n", address);
+	UNUSED(mem);
 	cpu->reg.pc = address;
 }
 
