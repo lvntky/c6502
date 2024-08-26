@@ -33,7 +33,7 @@ static uint16_t immediate_address_mode(c_cpu_t *cpu, m_memory_t *mem)
 static uint16_t absoulute_address_mode(c_cpu_t *cpu, m_memory_t *mem)
 {
 	uint16_t address = mem->mem[cpu->reg.pc + 1] |
-			   (mem->mem[cpu->reg.pc + 1]);
+			   (mem->mem[cpu->reg.pc + 2]);
 	return address;
 }
 
