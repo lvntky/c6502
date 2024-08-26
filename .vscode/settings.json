@@ -2,6 +2,10 @@
     "files.associations": {
         "g_gui.h": "c",
         "stdlib.h": "c",
-        "c_cpu.h": "c"
+        "c_cpu.h": "c",
+        "array": "c",
+        "string_view": "c",
+        "initializer_list": "c",
+        "utility": "c"
     }
 }

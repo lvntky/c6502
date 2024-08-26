@@ -18,5 +18,7 @@ void g_render_register_status(c_cpu_t *cpu);
 void g_render_memory(m_memory_t *mem);
 void g_render_disassembly(c_cpu_t *cpu, m_memory_t *memory);
 bool g_render_button(g_button_t *button);
+void g_render_control_panel(); // only visual
+void g_render_virtual_interface(); // only visual for now
 
 #endif //__G_GUI_H__

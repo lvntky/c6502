@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../include/u_config.h"
+#include "../include/u_util.h"
 
 #define MEMORY_DISPLAY_ROWS 10 // Number of memory rows to display
 #define MEMORY_DISPLAY_COLS 2 // Number of memory columns to display
@@ -172,4 +173,73 @@ bool g_render_button(g_button_t *button)
 		 20, button->text_color);
 
 	return clicked;
+}
+
+void g_render_control_panel()
+{
+	int boxWidth = 350;
+	int boxHeight = 165;
+	int boxX = 50;
+	int boxY = 460;
+
+	// Draw the box
+	DrawRectangle(boxX, boxY, boxWidth, boxHeight, DARKGRAY);
+	DrawRectangleLines(boxX, boxY, boxWidth, boxHeight, LIGHTGRAY);
+
+	DrawText("Control Panel", boxX, boxY - 25, 22, RAYWHITE);
+}
+
+void g_render_virtual_interface()
+{
+	int boxWidth = 320;
+	int boxHeight = 320;
+	int boxX = 50;
+	int boxY = 50;
+
+	// Draw the box
+	DrawRectangle(boxX, boxY, boxWidth, boxHeight, RAYWHITE);
+	DrawRectangleLines(boxX, boxY, boxWidth, boxHeight, ORANGE);
+
+	DrawText("Virtual Interface", boxX, boxY - 25, 22, RAYWHITE);
+}
+
+void g_render_disassembly(c_cpu_t *cpu, m_memory_t *memory)
+{
+	UNUSED(cpu);
+	UNUSED(memory);
+
+	int boxWidth = 320;
+	int boxHeight = 575;
+	int boxX = 475;
+	int boxY = 50;
+
+	// Draw the box
+	DrawRectangle(boxX, boxY, boxWidth, boxHeight, DARKGRAY);
+	DrawRectangleLines(boxX, boxY, boxWidth, boxHeight, LIGHTGRAY);
+
+	// Draw the title
+	DrawText("Disassembler", boxX, boxY - 25, 22, RAYWHITE);
+
+	// Parameters for disassembly display
+	int textX = boxX + 10;
+	int textY = boxY + 10;
+	int lineHeight = 20;
+
+	// Iterate over memory and disassemble instructions
+	for (int i = 0; i < 10; i += 1) {
+		// Disassemble the instruction at current memory location
+		char disassembled_instruction[128]; // Adjust size accordingly
+		//
+
+		// Draw the disassembled instruction
+		DrawText(disassembled_instruction, textX, textY, 18, RAYWHITE);
+
+		// Move to the next line
+		textY += lineHeight;
+
+		// Stop rendering if we exceed the box height
+		if (textY >= boxY + boxHeight - lineHeight) {
+			break;
+		}
+	}
 }
