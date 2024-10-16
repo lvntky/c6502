@@ -15,6 +15,9 @@
 
 #define MAX_INPUT_CHARS 32
 
+#define VIRTUAL_INTERFACE_START_ADDRESS 0x0200
+#define VIRTUAL_INTERFACE_END_ADDRESS 0x05FF
+
 static int scrollOffset = 0x0000;
 
 void g_render_register_status(c_cpu_t *cpu)
@@ -189,18 +192,92 @@ void g_render_control_panel()
 	DrawText("Control Panel", boxX, boxY - 25, 22, RAYWHITE);
 }
 
-void g_render_virtual_interface()
+void g_render_virtual_interface(m_memory_t *memory)
 {
 	int boxWidth = 320;
 	int boxHeight = 320;
 	int boxX = 50;
 	int boxY = 50;
+	int screenWidth = 32; // Width in "pixels" for the virtual screen
+	int screenHeight = 32; // Height in "pixels" for the virtual screen
+	int pixelSize =
+		boxWidth / screenWidth; // Size of each pixel in the interface
 
-	// Draw the box
+	// Draw the virtual interface box
 	DrawRectangle(boxX, boxY, boxWidth, boxHeight, RAYWHITE);
 	DrawRectangleLines(boxX, boxY, boxWidth, boxHeight, ORANGE);
 
+	// Draw the title
 	DrawText("Virtual Interface", boxX, boxY - 25, 22, RAYWHITE);
+
+	// Render pixels inside the virtual interface area
+	for (int addr = 0x0200; addr <= 0x05FF; addr++) {
+		// Calculate pixel position
+		int pixelX = boxX + ((addr - 0x0200) % screenWidth) * pixelSize;
+		int pixelY = boxY + ((addr - 0x0200) / screenWidth) * pixelSize;
+
+		// Get the memory value and map it to a color
+		uint8_t pixelColor = memory->mem[addr];
+		Color color;
+
+		// Map memory values to screen colors
+		switch (pixelColor) {
+		case 0x0:
+			color = BLACK;
+			break;
+		case 0x1:
+			color = WHITE;
+			break;
+		case 0x2:
+			color = RED;
+			break;
+		case 0x3:
+			color = (Color){ 0, 255, 255, 255 };
+			break; // Cyan
+		case 0x4:
+			color = PURPLE;
+			break;
+		case 0x5:
+			color = GREEN;
+			break;
+		case 0x6:
+			color = BLUE;
+			break;
+		case 0x7:
+			color = YELLOW;
+			break;
+		case 0x8:
+			color = ORANGE;
+			break;
+		case 0x9:
+			color = BROWN;
+			break;
+		case 0xA:
+			color = (Color){ 255, 102, 102, 255 };
+			break; // Light red
+		case 0xB:
+			color = DARKGRAY;
+			break;
+		case 0xC:
+			color = GRAY;
+			break;
+		case 0xD:
+			color = LIME;
+			break;
+		case 0xE:
+			color = SKYBLUE;
+			break;
+		case 0xF:
+			color = LIGHTGRAY;
+			break;
+		default:
+			color = BLACK;
+			break; // Default to black for unknown values
+		}
+
+		// Draw each pixel
+		DrawRectangle(pixelX, pixelY, pixelSize, pixelSize, color);
+	}
 }
 
 void g_render_disassembly(c_cpu_t *cpu, m_memory_t *memory)

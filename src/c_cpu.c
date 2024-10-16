@@ -136,11 +136,18 @@ void jmp_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 	cpu->reg.pc = address;
 }
 
+void sta_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
+{
+	mem->mem[address] = cpu->reg.acc;
+}
+
 static c_instruction_t instruction_set[] = {
 	{ 0xA9, ADDR_MODE_IMMEDIATE, immediate_address_mode, lda_handler,
-	  2 }, // LDA
+	  2 }, // LDA Immediate
 	{ 0x4C, ADDR_MODE_ABSOLUTE, absoulute_address_mode, jmp_handler,
-	  3 } // JMP
+	  3 }, // JMP Absolute
+	{ 0x8D, ADDR_MODE_ABSOLUTE, absoulute_address_mode, sta_handler,
+	  4 } // STA Absolute
 };
 
 void c_execute(c_cpu_t *cpu, m_memory_t *memory)
