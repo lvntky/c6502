@@ -35,6 +35,7 @@ static uint16_t absoulute_address_mode(c_cpu_t *cpu, m_memory_t *mem)
 {
 	uint16_t address =
 		((mem->mem[cpu->reg.pc + 2] << 8) | mem->mem[cpu->reg.pc + 1]);
+	printf("absolute address mode returned : 0x%04x\n", address);
 	return address;
 }
 
@@ -147,7 +148,7 @@ static c_instruction_t instruction_set[] = {
 	{ 0x4C, ADDR_MODE_ABSOLUTE, absoulute_address_mode, jmp_handler,
 	  3 }, // JMP Absolute
 	{ 0x8D, ADDR_MODE_ABSOLUTE, absoulute_address_mode, sta_handler,
-	  4 } // STA Absolute
+	  3 } // STA Absolute
 };
 
 void c_execute(c_cpu_t *cpu, m_memory_t *memory)
