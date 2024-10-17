@@ -74,7 +74,10 @@ int main(int argc, char **argv)
 
 		g_render_register_status(&cpu);
 		g_render_memory(&memory);
-		g_render_virtual_interface(&memory);
+		if (&memory >= 0x200 || &memory <= 0x05FF) {
+			g_render_virtual_interface(&memory);
+		}
+
 		g_render_disassembly(&cpu, &memory);
 
 		EndDrawing();

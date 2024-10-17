@@ -153,12 +153,16 @@ static c_instruction_t instruction_set[] = {
 void c_execute(c_cpu_t *cpu, m_memory_t *memory)
 {
 	if (exec_status) {
+		// Fetch the opcode from memory using the program counter
 		uint8_t opcode = memory->mem[cpu->reg.pc];
-		c_instruction_t *instruction = NULL;
+		printf("PC: 0x%04x, Opcode: 0x%02x\n", cpu->reg.pc,
+		       opcode); // Log PC and opcode
 
+		c_instruction_t *instruction = NULL;
 		size_t set_size =
 			sizeof(instruction_set) / sizeof(c_instruction_t);
 
+		// Find the corresponding instruction in the instruction set
 		for (size_t i = 0; i < set_size; i++) {
 			if (opcode == instruction_set[i].opcode) {
 				instruction = &instruction_set[i];
@@ -167,13 +171,30 @@ void c_execute(c_cpu_t *cpu, m_memory_t *memory)
 		}
 
 		if (instruction) {
+			// Log the found instruction and addressing mode
+			printf("Instruction found: Opcode: 0x%02x, Cycles: %d, Addressing Mode Handler: %p\n",
+			       instruction->opcode, instruction->cycle,
+			       (void *)instruction->add_mode_handler);
+
+			// Execute the addressing mode handler and get the memory address
 			uint16_t address =
 				instruction->add_mode_handler(cpu, memory);
+			printf("Calculated Address: 0x%04x\n",
+			       address); // Log the calculated address
+
+			// Update the program counter based on the cycle count
 			cpu->reg.pc += instruction->cycle;
+			printf("Updated PC: 0x%04x\n",
+			       cpu->reg.pc); // Log the updated program counter
+
+			// Execute the opcode handler
 			instruction->opcode_handler(cpu, memory, address);
 		} else {
-			printf("UNHANDLED OPCODE 0x%04x\n", opcode);
-			//exec_status = false;
+			// Log unhandled opcode
+			printf("UNHANDLED OPCODE 0x%04x at PC: 0x%04x\n",
+			       opcode, cpu->reg.pc);
+
+			// Increment the program counter to skip over the unhandled opcode
 			cpu->reg.pc++;
 		}
 	}

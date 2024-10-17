@@ -203,15 +203,30 @@ void g_render_virtual_interface(m_memory_t *memory)
 	int pixelSize =
 		boxWidth / screenWidth; // Size of each pixel in the interface
 
-	// Draw the virtual interface box
-	DrawRectangle(boxX, boxY, boxWidth, boxHeight, RAYWHITE);
-	DrawRectangleLines(boxX, boxY, boxWidth, boxHeight, ORANGE);
-
 	// Draw the title
 	DrawText("Virtual Interface", boxX, boxY - 25, 22, RAYWHITE);
 
+	// Draw the border for the virtual interface
+	int borderThickness = 4; // Thickness of the border
+	Color borderColor = ORANGE; // Border color (orange)
+
+	// Draw the top and bottom borders
+	DrawRectangle(boxX - borderThickness, boxY - borderThickness,
+		      boxWidth + (2 * borderThickness), borderThickness,
+		      borderColor); // Top border
+	DrawRectangle(boxX - borderThickness, boxY + boxHeight,
+		      boxWidth + (2 * borderThickness), borderThickness,
+		      borderColor); // Bottom border
+
+	// Draw the left and right borders
+	DrawRectangle(boxX - borderThickness, boxY, borderThickness, boxHeight,
+		      borderColor); // Left border
+	DrawRectangle(boxX + boxWidth, boxY, borderThickness, boxHeight,
+		      borderColor); // Right border
+
 	// Render pixels inside the virtual interface area
-	for (int addr = 0x0200; addr <= 0x05FF; addr++) {
+	for (int addr = VIRTUAL_INTERFACE_START_ADDRESS;
+	     addr <= VIRTUAL_INTERFACE_END_ADDRESS; addr++) {
 		// Calculate pixel position
 		int pixelX = boxX + ((addr - 0x0200) % screenWidth) * pixelSize;
 		int pixelY = boxY + ((addr - 0x0200) / screenWidth) * pixelSize;
@@ -232,8 +247,8 @@ void g_render_virtual_interface(m_memory_t *memory)
 			color = RED;
 			break;
 		case 0x3:
-			color = (Color){ 0, 255, 255, 255 };
-			break; // Cyan
+			color = (Color){ 0, 255, 255, 255 }; // Cyan
+			break;
 		case 0x4:
 			color = PURPLE;
 			break;
@@ -253,8 +268,8 @@ void g_render_virtual_interface(m_memory_t *memory)
 			color = BROWN;
 			break;
 		case 0xA:
-			color = (Color){ 255, 102, 102, 255 };
-			break; // Light red
+			color = (Color){ 255, 102, 102, 255 }; // Light red
+			break;
 		case 0xB:
 			color = DARKGRAY;
 			break;
@@ -271,8 +286,8 @@ void g_render_virtual_interface(m_memory_t *memory)
 			color = LIGHTGRAY;
 			break;
 		default:
-			color = BLACK;
-			break; // Default to black for unknown values
+			color = BLACK; // Default to black for unknown values
+			break;
 		}
 
 		// Draw each pixel
