@@ -131,6 +131,40 @@ void lda_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 	}
 }
 
+// Load X register
+void ldx_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
+{
+	cpu->reg.x = mem->mem[address];
+	if (cpu->reg.acc == 0) {
+		SET_FLAG(cpu->reg, FLAG_ZERO);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_ZERO);
+	}
+	// Update negative flag
+	if (cpu->reg.acc & 0x80) {
+		SET_FLAG(cpu->reg, FLAG_NEGATIVE);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_NEGATIVE);
+	}
+}
+
+// Load Y register
+void ldy_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
+{
+	cpu->reg.y = mem->mem[address];
+	if (cpu->reg.acc == 0) {
+		SET_FLAG(cpu->reg, FLAG_ZERO);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_ZERO);
+	}
+	// Update negative flag
+	if (cpu->reg.acc & 0x80) {
+		SET_FLAG(cpu->reg, FLAG_NEGATIVE);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_NEGATIVE);
+	}
+}
+
 void jmp_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 {
 	UNUSED(mem);
@@ -142,13 +176,139 @@ void sta_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 	mem->mem[address] = cpu->reg.acc;
 }
 
+void txa_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
+{
+	UNUSED(mem);
+	UNUSED(address);
+	cpu->reg.acc = cpu->reg.x;
+
+	// Update zero flag
+	if (cpu->reg.acc == 0) {
+		SET_FLAG(cpu->reg, FLAG_ZERO);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_ZERO);
+	}
+
+	// Update negative flag
+	if (cpu->reg.acc & 0x80) {
+		SET_FLAG(cpu->reg, FLAG_NEGATIVE);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_NEGATIVE);
+	}
+}
+
+void pha_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
+{
+	UNUSED(address);
+	mem->mem[cpu->reg.sp--] = cpu->reg.acc;
+}
+
+void pla_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
+{
+	UNUSED(address);
+	cpu->reg.acc = mem->mem[++cpu->reg.sp];
+}
+
+void inx_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
+{
+	UNUSED(mem);
+	UNUSED(address);
+	cpu->reg.x++;
+
+	// Update zero flag
+	if (cpu->reg.x == 0) {
+		SET_FLAG(cpu->reg, FLAG_ZERO);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_ZERO);
+	}
+
+	// Update negative flag
+	if (cpu->reg.x & 0x80) {
+		SET_FLAG(cpu->reg, FLAG_NEGATIVE);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_NEGATIVE);
+	}
+}
+
+void iny_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
+{
+	UNUSED(mem);
+	UNUSED(address);
+	cpu->reg.y++;
+
+	// Update zero flag
+	if (cpu->reg.y == 0) {
+		SET_FLAG(cpu->reg, FLAG_ZERO);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_ZERO);
+	}
+
+	// Update negative flag
+	if (cpu->reg.y & 0x80) {
+		SET_FLAG(cpu->reg, FLAG_NEGATIVE);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_NEGATIVE);
+	}
+}
+
+void cpy_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
+{
+	uint8_t value = mem->mem[address];
+	if (cpu->reg.y == value) {
+		SET_FLAG(cpu->reg, FLAG_ZERO);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_ZERO);
+	}
+
+	// Set or clear negative flag
+	if ((cpu->reg.y - value) & 0x80) {
+		SET_FLAG(cpu->reg, FLAG_NEGATIVE);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_NEGATIVE);
+	}
+
+	// Set carry flag
+	if (cpu->reg.y >= value) {
+		SET_FLAG(cpu->reg, FLAG_CARRY);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_CARRY);
+	}
+}
+
+void bne_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
+{
+	if (!(cpu->reg.status & FLAG_ZERO)) {
+		cpu->reg.pc = address;
+	} else {
+		cpu->reg.pc += 2;
+	}
+}
+
 static c_instruction_t instruction_set[] = {
 	{ 0xA9, ADDR_MODE_IMMEDIATE, immediate_address_mode, lda_handler,
 	  2 }, // LDA Immediate
+	{ 0xA2, ADDR_MODE_IMMEDIATE, immediate_address_mode, ldx_handler,
+	  2 }, // LDX Immediate
+	{ 0xA0, ADDR_MODE_IMMEDIATE, immediate_address_mode, ldy_handler,
+	  2 }, // LDX Immediate
 	{ 0x4C, ADDR_MODE_ABSOLUTE, absoulute_address_mode, jmp_handler,
 	  3 }, // JMP Absolute
 	{ 0x8D, ADDR_MODE_ABSOLUTE, absoulute_address_mode, sta_handler,
-	  3 } // STA Absolute
+	  3 }, // STA Absolute
+	{ 0x8A, ADDR_MODE_IMPLIED, implied_address_mode, txa_handler,
+	  2 }, // TXA
+	{ 0x48, ADDR_MODE_IMPLIED, implied_address_mode, pha_handler,
+	  3 }, // PHA
+	{ 0x68, ADDR_MODE_IMPLIED, implied_address_mode, pla_handler,
+	  4 }, // PLA
+	{ 0xE8, ADDR_MODE_IMPLIED, implied_address_mode, inx_handler,
+	  2 }, // INX
+	{ 0xC8, ADDR_MODE_IMPLIED, implied_address_mode, iny_handler,
+	  2 }, // INY
+	{ 0xC0, ADDR_MODE_IMMEDIATE, immediate_address_mode, cpy_handler,
+	  2 }, // CPY Immediate
+	{ 0xD0, ADDR_MODE_RELATIVE, relative_address_mode, bne_handler,
+	  2 }, // BNE
 };
 
 void c_execute(c_cpu_t *cpu, m_memory_t *memory)
