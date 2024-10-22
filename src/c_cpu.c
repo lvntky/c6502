@@ -305,21 +305,25 @@ void cpy_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 
 void bne_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 {
-	int8_t offset =
-		(int8_t)mem->mem[cpu->reg.pc + 1]; // Get the signed offset
+	UNUSED(address); // The address is not used directly by BNE
 
-	// Check whether the Zero flag is set
+	// Get the signed offset from the instruction
+	int8_t offset = (int8_t)mem->mem[cpu->reg.pc + 1];
+
+	// Log the Zero flag and the offset
 	printf("BNE: Zero flag is %d, Offset is %d\n",
 	       (cpu->reg.status & FLAG_ZERO) != 0, offset);
 
-	// Branch if Zero flag is NOT set
+	// Branch if the Zero flag is NOT set
 	if ((cpu->reg.status & FLAG_ZERO) == 0) {
-		cpu->reg.pc = offset;
-		cpu->reg.pc += 2;
+		// Apply the relative branch by adding the offset to the PC
+		cpu->reg.pc +=
+			offset; // Include the size of the instruction (2 bytes)
 		printf("BNE Taken: PC set to 0x%04X\n", cpu->reg.pc);
 	} else {
+		// If Zero flag is set, move to the next instruction
 		cpu->reg.pc +=
-			2; // If Zero flag is set, just move to next instruction
+			2; // Just increment PC by 2 bytes (BNE instruction length)
 		printf("BNE Not Taken: PC set to 0x%04X\n", cpu->reg.pc);
 	}
 }
@@ -438,12 +442,13 @@ void c_execute(c_cpu_t *cpu, m_memory_t *memory)
 			       address); // Log the calculated address
 
 			// Update the program counter based on the instruction length (not cycles)
-			cpu->reg.pc += instruction->cycle;
-			printf("Updated PC: 0x%04x\n",
-			       cpu->reg.pc); // Log the updated program counter
 
 			// Execute the opcode handler
 			instruction->opcode_handler(cpu, memory, address);
+
+			cpu->reg.pc += instruction->cycle;
+			printf("Updated PC: 0x%04x\n",
+			       cpu->reg.pc); // Log the updated program counter
 		} else {
 			// Log unhandled opcode
 			printf("UNHANDLED OPCODE 0x%04x at PC: 0x%04x\n",
