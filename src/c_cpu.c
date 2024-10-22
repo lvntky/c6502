@@ -111,8 +111,9 @@ static uint16_t indirect_y_address_mode(c_cpu_t *cpu, m_memory_t *mem)
 // Im not sure of that
 static uint16_t relative_address_mode(c_cpu_t *cpu, m_memory_t *mem)
 {
-	int8_t offset = mem->mem[cpu->reg.pc + 1];
-	return cpu->reg.pc + 2 + offset;
+	int8_t offset = mem->mem[cpu->reg.pc + 1]; // Offset is signed
+	return cpu->reg.pc + 2 +
+	       offset; // PC is incremented by 2 (opcode + operand)
 }
 
 void lda_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
@@ -200,7 +201,9 @@ void txa_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 void pha_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 {
 	UNUSED(address);
-	mem->mem[cpu->reg.sp--] = cpu->reg.acc;
+	mem->mem[0x0100 + cpu->reg.sp] =
+		cpu->reg.acc; // Store accumulator in stack
+	cpu->reg.sp--; // Decrement stack pointer
 }
 
 void pla_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
@@ -254,37 +257,99 @@ void iny_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 void cpy_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 {
 	uint8_t value = mem->mem[address];
-	if (cpu->reg.y == value) {
+	uint16_t result = cpu->reg.y - value;
+
+	// Zero flag
+	if (result == 0) {
 		SET_FLAG(cpu->reg, FLAG_ZERO);
 	} else {
 		CLEAR_FLAG(cpu->reg, FLAG_ZERO);
 	}
 
-	// Set or clear negative flag
-	if ((cpu->reg.y - value) & 0x80) {
-		SET_FLAG(cpu->reg, FLAG_NEGATIVE);
-	} else {
-		CLEAR_FLAG(cpu->reg, FLAG_NEGATIVE);
-	}
-
-	// Set carry flag
+	// Carry flag
 	if (cpu->reg.y >= value) {
 		SET_FLAG(cpu->reg, FLAG_CARRY);
 	} else {
 		CLEAR_FLAG(cpu->reg, FLAG_CARRY);
 	}
+
+	// Negative flag
+	if (result & 0x80) {
+		SET_FLAG(cpu->reg, FLAG_NEGATIVE);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_NEGATIVE);
+	}
 }
 
 void bne_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 {
-	if (!(cpu->reg.status & FLAG_ZERO)) {
-		cpu->reg.pc = address;
+	int8_t offset = (int8_t)mem->mem[cpu->reg.pc + 1]; // Get signed offset
+
+	// Correct the logging to check whether Zero flag is set
+	printf("BNE: Zero flag is %d, Offset is %d\n",
+	       (cpu->reg.status & FLAG_ZERO) != 0, offset);
+
+	// Branch if the Zero flag is NOT set (i.e., a non-equal condition)
+	if ((cpu->reg.status & FLAG_ZERO) == 0) {
+		cpu->reg.pc +=
+			2 +
+			offset; // Increment by 2 (opcode + operand), then apply offset
+		printf("BNE Taken: PC set to 0x%04X\n", cpu->reg.pc);
 	} else {
-		cpu->reg.pc += 2;
+		cpu->reg.pc +=
+			2; // If Zero flag is set, move to the next instruction
+		printf("BNE Not Taken: PC set to 0x%04X\n", cpu->reg.pc);
 	}
 }
 
+void brk_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
+{
+	UNUSED(cpu);
+	UNUSED(mem);
+	UNUSED(address);
+	/*
+	while (1) {
+		//pseudo halt
+	}
+	*/
+}
+
+void cpx_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
+{
+	uint8_t value = mem->mem[address]; // Get the value to compare
+	uint16_t result = cpu->reg.x - value;
+
+	// Zero flag: Set if X == value
+	if (result == 0) {
+		SET_FLAG(cpu->reg, FLAG_ZERO);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_ZERO);
+	}
+
+	// Carry flag: Set if X >= value
+	if (cpu->reg.x >= value) {
+		SET_FLAG(cpu->reg, FLAG_CARRY);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_CARRY);
+	}
+
+	// Negative flag: Set if result of X - value is negative (bit 7 is 1)
+	if (result & 0x80) {
+		SET_FLAG(cpu->reg, FLAG_NEGATIVE);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_NEGATIVE);
+	}
+
+	// Log the flags after the CPX instruction
+	printf("CPX Result: X = %02X, Value = %02X, Zero = %d, Carry = %d, Negative = %d\n",
+	       cpu->reg.x, value, (cpu->reg.status & FLAG_ZERO) != 0,
+	       (cpu->reg.status & FLAG_CARRY) != 0,
+	       (cpu->reg.status & FLAG_NEGATIVE) != 0);
+}
+// Update instruction_set to include an instruction length
 static c_instruction_t instruction_set[] = {
+	{ 0x00, ADDR_MODE_IMMEDIATE, immediate_address_mode, brk_handler,
+	  1 }, // BRK
 	{ 0xA9, ADDR_MODE_IMMEDIATE, immediate_address_mode, lda_handler,
 	  2 }, // LDA Immediate
 	{ 0xA2, ADDR_MODE_IMMEDIATE, immediate_address_mode, ldx_handler,
@@ -296,21 +361,26 @@ static c_instruction_t instruction_set[] = {
 	{ 0x8D, ADDR_MODE_ABSOLUTE, absoulute_address_mode, sta_handler,
 	  3 }, // STA Absolute
 	{ 0x8A, ADDR_MODE_IMPLIED, implied_address_mode, txa_handler,
-	  2 }, // TXA
+	  1 }, // TXA
 	{ 0x48, ADDR_MODE_IMPLIED, implied_address_mode, pha_handler,
-	  3 }, // PHA
+	  1 }, // PHA
 	{ 0x68, ADDR_MODE_IMPLIED, implied_address_mode, pla_handler,
-	  4 }, // PLA
+	  1 }, // PLA
 	{ 0xE8, ADDR_MODE_IMPLIED, implied_address_mode, inx_handler,
-	  2 }, // INX
+	  1 }, // INX
 	{ 0xC8, ADDR_MODE_IMPLIED, implied_address_mode, iny_handler,
-	  2 }, // INY
+	  1 }, // INY
 	{ 0xC0, ADDR_MODE_IMMEDIATE, immediate_address_mode, cpy_handler,
 	  2 }, // CPY Immediate
 	{ 0xD0, ADDR_MODE_RELATIVE, relative_address_mode, bne_handler,
 	  2 }, // BNE
+	{ 0x99, ADDR_MODE_ABSOLUTE_Y, absolute_y_address_mode, sta_handler,
+	  3 }, // STA Absolute,Y
+	{ 0xE0, ADDR_MODE_IMMEDIATE, immediate_address_mode, cpx_handler,
+	  2 }, // CPX Immediate
 };
 
+// Update program counter based on the instruction length
 void c_execute(c_cpu_t *cpu, m_memory_t *memory)
 {
 	if (exec_status) {
@@ -333,9 +403,8 @@ void c_execute(c_cpu_t *cpu, m_memory_t *memory)
 
 		if (instruction) {
 			// Log the found instruction and addressing mode
-			printf("Instruction found: Opcode: 0x%02x, Cycles: %d, Addressing Mode Handler: %p\n",
-			       instruction->opcode, instruction->cycle,
-			       (void *)instruction->add_mode_handler);
+			printf("Instruction found: Opcode: 0x%02x, Length: %d\n",
+			       instruction->opcode, instruction->cycle);
 
 			// Execute the addressing mode handler and get the memory address
 			uint16_t address =
@@ -343,7 +412,7 @@ void c_execute(c_cpu_t *cpu, m_memory_t *memory)
 			printf("Calculated Address: 0x%04x\n",
 			       address); // Log the calculated address
 
-			// Update the program counter based on the cycle count
+			// Update the program counter based on the instruction length (not cycles)
 			cpu->reg.pc += instruction->cycle;
 			printf("Updated PC: 0x%04x\n",
 			       cpu->reg.pc); // Log the updated program counter
