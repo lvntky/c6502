@@ -170,6 +170,7 @@ void jmp_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 {
 	UNUSED(mem);
 	cpu->reg.pc = address;
+	printf("JMP Absolute: Jumped to address 0x%04X\n", cpu->reg.pc);
 }
 
 void sta_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
@@ -383,7 +384,7 @@ static c_instruction_t instruction_set[] = {
 	{ 0xA0, ADDR_MODE_IMMEDIATE, immediate_address_mode, ldy_handler,
 	  2 }, // LDX Immediate
 	{ 0x4C, ADDR_MODE_ABSOLUTE, absoulute_address_mode, jmp_handler,
-	  3 }, // JMP Absolute
+	  0 }, // JMP Absolute
 	{ 0x8D, ADDR_MODE_ABSOLUTE, absoulute_address_mode, sta_handler,
 	  3 }, // STA Absolute
 	{ 0x8A, ADDR_MODE_IMPLIED, implied_address_mode, txa_handler,
