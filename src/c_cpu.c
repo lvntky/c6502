@@ -212,6 +212,28 @@ void pla_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 	cpu->reg.acc = mem->mem[++cpu->reg.sp];
 }
 
+void decx_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
+{
+	UNUSED(mem); // DECX doesn't use memory
+	UNUSED(address); // DECX doesn't use memory
+
+	cpu->reg.x--; // Decrement X register
+
+	// Update Zero flag
+	if (cpu->reg.x == 0) {
+		SET_FLAG(cpu->reg, FLAG_ZERO);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_ZERO);
+	}
+
+	// Update Negative flag
+	if (cpu->reg.x & 0x80) { // Check if the sign bit is set (bit 7)
+		SET_FLAG(cpu->reg, FLAG_NEGATIVE);
+	} else {
+		CLEAR_FLAG(cpu->reg, FLAG_NEGATIVE);
+	}
+}
+
 void inx_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 {
 	UNUSED(mem);
@@ -283,21 +305,21 @@ void cpy_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 
 void bne_handler(c_cpu_t *cpu, m_memory_t *mem, uint16_t address)
 {
-	int8_t offset = (int8_t)mem->mem[cpu->reg.pc + 1]; // Get signed offset
+	int8_t offset =
+		(int8_t)mem->mem[cpu->reg.pc + 1]; // Get the signed offset
 
-	// Correct the logging to check whether Zero flag is set
+	// Check whether the Zero flag is set
 	printf("BNE: Zero flag is %d, Offset is %d\n",
 	       (cpu->reg.status & FLAG_ZERO) != 0, offset);
 
-	// Branch if the Zero flag is NOT set (i.e., a non-equal condition)
+	// Branch if Zero flag is NOT set
 	if ((cpu->reg.status & FLAG_ZERO) == 0) {
-		cpu->reg.pc +=
-			2 +
-			offset; // Increment by 2 (opcode + operand), then apply offset
+		cpu->reg.pc = offset;
+		cpu->reg.pc += 2;
 		printf("BNE Taken: PC set to 0x%04X\n", cpu->reg.pc);
 	} else {
 		cpu->reg.pc +=
-			2; // If Zero flag is set, move to the next instruction
+			2; // If Zero flag is set, just move to next instruction
 		printf("BNE Not Taken: PC set to 0x%04X\n", cpu->reg.pc);
 	}
 }
@@ -378,6 +400,9 @@ static c_instruction_t instruction_set[] = {
 	  3 }, // STA Absolute,Y
 	{ 0xE0, ADDR_MODE_IMMEDIATE, immediate_address_mode, cpx_handler,
 	  2 }, // CPX Immediate
+	{ 0xCA, ADDR_MODE_IMPLIED, implied_address_mode, decx_handler,
+	  1 }, // DECX Implied
+
 };
 
 // Update program counter based on the instruction length
